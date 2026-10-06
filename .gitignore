@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pkl
+theorem_weights.json
+.vscode/
+.idea/
+.DS_Store
+venv/
+.venv/
+*.log

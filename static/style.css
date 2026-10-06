@@ -1,0 +1,296 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                 "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: #f5f7fa;
+    color: #2c3e50;
+    line-height: 1.6;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    padding: 30px 0;
+}
+
+h1 {
+    font-size: 28px;
+    color: #1a365d;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #718096;
+    font-size: 14px;
+}
+
+h2 {
+    font-size: 20px;
+    color: #2d3748;
+    margin: 24px 0 16px;
+    border-left: 4px solid #4299e1;
+    padding-left: 12px;
+}
+
+/* 输入区 */
+.input-section {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+}
+
+.input-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.input-row label {
+    font-weight: 600;
+    min-width: 70px;
+    color: #4a5568;
+}
+
+input[type="text"] {
+    flex: 1;
+    padding: 10px 14px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: "SF Mono", Monaco, Consolas, monospace;
+    transition: border-color 0.2s;
+    min-width: 200px;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: #4299e1;
+}
+
+select {
+    padding: 10px 14px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 15px;
+    background: white;
+    cursor: pointer;
+}
+
+select:focus { outline: none; border-color: #4299e1; }
+
+button {
+    background: #4299e1;
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    margin-top: 8px;
+}
+
+button:hover { background: #3182ce; transform: translateY(-1px); }
+button:active { transform: translateY(0); }
+
+.examples {
+    margin-top: 16px;
+    font-size: 13px;
+    color: #718096;
+}
+
+.examples a {
+    display: inline-block;
+    margin: 4px 8px 4px 0;
+    padding: 3px 10px;
+    background: #edf2f7;
+    color: #4a5568;
+    border-radius: 4px;
+    text-decoration: none;
+    font-family: "SF Mono", Monaco, Consolas, monospace;
+    transition: background 0.2s;
+}
+
+.examples a:hover { background: #cbd5e0; color: #2d3748; }
+
+/* 结果区 */
+.result-section {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+    min-height: 100px;
+}
+
+#status {
+    font-size: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid #edf2f7;
+    margin-bottom: 16px;
+}
+
+.success { color: #38a169; font-weight: 600; }
+.error { color: #e53e3e; font-weight: 600; }
+.loading { color: #4299e1; }
+.badge {
+    display: inline-block;
+    background: #ebf8ff;
+    color: #2b6cb0;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+/* 证明链 */
+.proof-list {
+    list-style: none;
+    counter-reset: step;
+}
+
+.proof-step {
+    padding: 12px 16px;
+    border-left: 3px solid #4299e1;
+    background: #f7fafc;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    transition: background 0.2s;
+}
+
+.proof-step:hover { background: #edf2f7; }
+
+.step-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.step-num {
+    font-family: "SF Mono", Monaco, Consolas, monospace;
+    color: #718096;
+    font-size: 13px;
+}
+
+.step-name {
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.step-id {
+    font-family: "SF Mono", Monaco, Consolas, monospace;
+    color: #a0aec0;
+    font-size: 13px;
+}
+
+.step-cat {
+    background: #fefcbf;
+    color: #744210;
+    padding: 1px 8px;
+    border-radius: 8px;
+    font-size: 11px;
+}
+
+.step-body, .step-head {
+    font-size: 13px;
+    color: #4a5568;
+    margin-top: 4px;
+}
+
+.step-head code, .theorem-head code {
+    background: #2d3748;
+    color: #68d391;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: "SF Mono", Monaco, Consolas, monospace;
+    font-size: 12px;
+}
+
+/* 定理库 */
+.theorem-section {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.theorem-count {
+    color: #718096;
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+
+.theorem-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+}
+
+.theorem-card {
+    padding: 12px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #fafbfc;
+    transition: all 0.2s;
+}
+
+.theorem-card:hover {
+    border-color: #4299e1;
+    box-shadow: 0 2px 6px rgba(66,153,225,0.15);
+}
+
+.theorem-id {
+    font-family: "SF Mono", Monaco, Consolas, monospace;
+    color: #4299e1;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.theorem-name {
+    font-weight: 600;
+    color: #2d3748;
+    margin: 4px 0;
+}
+
+.theorem-cat {
+    display: inline-block;
+    background: #fefcbf;
+    color: #744210;
+    padding: 1px 8px;
+    border-radius: 8px;
+    font-size: 11px;
+    margin-bottom: 6px;
+}
+
+.theorem-head {
+    margin-top: 6px;
+    font-size: 12px;
+}
+
+.theorem-body {
+    font-size: 12px;
+    color: #718096;
+    margin-top: 4px;
+    font-family: "SF Mono", Monaco, Consolas, monospace;
+}
+
+@media (max-width: 600px) {
+    .input-row { flex-direction: column; align-items: stretch; }
+    .input-row label { min-width: auto; }
+    .theorem-grid { grid-template-columns: 1fr; }
+}

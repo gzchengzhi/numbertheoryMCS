@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>数论定理证明器</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>数论定理自动证明器</h1>
+            <p class="subtitle">基于 SLD 归结 + 反向搜索 · 零依赖 · 可解释</p>
+        </header>
+
+        <section class="input-section">
+            <div class="input-row">
+                <label>证明目标</label>
+                <input type="text" id="goal" placeholder="如：prime(3)、irrational(sqrt(2))、sum_to_n(k, S)"
+                       value="irrational(sqrt(2))">
+            </div>
+
+            <div class="input-row">
+                <label>策略</label>
+                <select id="strategy">
+                    <option value="auto">auto（自动选择）</option>
+                    <option value="direct">direct（直接证明）</option>
+                    <option value="contradiction">contradiction（反证法）</option>
+                    <option value="induction">induction（数学归纳法）</option>
+                </select>
+
+                <label style="margin-left: 20px;">归纳变量</label>
+                <input type="text" id="var" placeholder="如 k" style="width: 80px;">
+            </div>
+
+            <button id="prove-btn">开始证明</button>
+
+            <div class="examples">
+                <span>示例：</span>
+                <a href="#" class="example" data-goal="prime(3)">prime(3)</a>
+                <a href="#" class="example" data-goal="prime(5)">prime(5)</a>
+                <a href="#" class="example" data-goal="irrational(sqrt(2))">irrational(sqrt(2))</a>
+                <a href="#" class="example" data-goal="irrational(sqrt(5))">irrational(sqrt(5))</a>
+                <a href="#" class="example" data-goal="divides(1, x)">divides(1, x)</a>
+                <a href="#" class="example" data-goal="prime_infinite" data-strategy="contradiction">prime_infinite（反证）</a>
+                <a href="#" class="example" data-goal="sum_to_n(k, S)" data-strategy="induction" data-var="k">sum_to_n（归纳）</a>
+            </div>
+        </section>
+
+        <section class="result-section">
+            <div id="status"></div>
+            <div id="proof-container"></div>
+        </section>
+
+        <section class="theorem-section">
+            <h2>定理库</h2>
+            <div id="theorems"></div>
+        </section>
+    </div>
+
+    <script>
+        const goalInput = document.getElementById('goal');
+        const strategySelect = document.getElementById('strategy');
+        const varInput = document.getElementById('var');
+        const proveBtn = document.getElementById('prove-btn');
+        const statusDiv = document.getElementById('status');
+        const proofDiv = document.getElementById('proof-container');
+        const theoremsDiv = document.getElementById('theorems');
+
+        // 示例点击
+        document.querySelectorAll('.example').forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.preventDefault();
+                goalInput.value = el.dataset.goal;
+                if (el.dataset.strategy) strategySelect.value = el.dataset.strategy;
+                if (el.dataset.var) varInput.value = el.dataset.var;
+                else varInput.value = '';
+                prove();
+            });
+        });
+
+        proveBtn.addEventListener('click', prove);
+
+        goalInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') prove();
+        });
+
+        async function prove() {
+            const goal = goalInput.value.trim();
+            if (!goal) return;
+
+            statusDiv.innerHTML = '<span class="loading">证明中...</span>';
+            proofDiv.innerHTML = '';
+
+            try {
+                const res = await fetch('/api/prove', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        goal: goal,
+                        strategy: strategySelect.value,
+                        var: varInput.value.trim(),
+                    }),
+                });
+                const data = await res.json();
+                renderResult(data);
+            } catch (err) {
+                statusDiv.innerHTML = `<span class="error">请求失败: ${err.message}</span>`;
+            }
+        }
+
+        function renderResult(data) {
+            if (!data.success) {
+                statusDiv.innerHTML = `<span class="error">✗ ${data.error || '证明失败'}</span>`;
+                return;
+            }
+
+            statusDiv.innerHTML = `<span class="success">✓ 证明成功：${escapeHtml(data.goal)}</span>`;
+
+            if (data.strategy === 'contradiction' || data.proof.some(s => s.strategy === 'contradiction')) {
+                statusDiv.innerHTML += ' <span class="badge">反证法</span>';
+            }
+            if (data.proof.some(s => s.strategy === 'induction')) {
+                statusDiv.innerHTML += ' <span class="badge">数学归纳法</span>';
+            }
+
+            let html = '<h2>证明链</h2><ol class="proof-list">';
+            data.proof.forEach((step, i) => {
+                const indent = Math.min(step.depth, 4) * 20;
+                html += `<li class="proof-step" style="margin-left:${indent}px">`;
+                html += `<div class="step-header">`;
+                html += `<span class="step-num">[${i+1}]</span> `;
+                html += `<span class="step-name">${escapeHtml(step.name)}</span> `;
+                html += `<span class="step-id">（${step.id}）</span>`;
+                if (step.category) {
+                    html += ` <span class="step-cat">${escapeHtml(step.category)}</span>`;
+                }
+                html += `</div>`;
+
+                if (step.body && step.body.length > 0) {
+                    html += `<div class="step-body"><strong>前提：</strong>${step.body.map(escapeHtml).join('，')}</div>`;
+                }
+                html += `<div class="step-head"><strong>结论：</strong><code>${escapeHtml(step.head)}</code></div>`;
+                html += `</li>`;
+            });
+            html += '</ol>';
+            proofDiv.innerHTML = html;
+        }
+
+        function escapeHtml(s) {
+            if (s == null) return '';
+            return String(s)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        // 加载定理库
+        async function loadTheorems() {
+            try {
+                const res = await fetch('/api/theorems');
+                const theorems = await res.json();
+                let html = `<p class="theorem-count">共 ${theorems.length} 条定理</p>`;
+                html += '<div class="theorem-grid">';
+                theorems.forEach(t => {
+                    html += `<div class="theorem-card">`;
+                    html += `<div class="theorem-id">${t.id}</div>`;
+                    html += `<div class="theorem-name">${escapeHtml(t.name)}</div>`;
+                    html += `<div class="theorem-cat">${escapeHtml(t.category)}</div>`;
+                    html += `<div class="theorem-head"><code>${escapeHtml(t.head)}</code></div>`;
+                    if (t.body.length > 0) {
+                        html += `<div class="theorem-body">← ${t.body.map(escapeHtml).join('，')}</div>`;
+                    }
+                    html += `</div>`;
+                });
+                html += '</div>';
+                theoremsDiv.innerHTML = html;
+            } catch (err) {
+                theoremsDiv.innerHTML = `<span class="error">加载失败: ${err.message}</span>`;
+            }
+        }
+
+        loadTheorems();
+    </script>
+</body>
+</html>

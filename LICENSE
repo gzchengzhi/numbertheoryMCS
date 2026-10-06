@@ -1,0 +1,17 @@
+算法与架构：CC BY-NC 4.0（署名 + 禁止商用）
+
+引用要求：使用本项目请引用 [1] 和 [2]
+### [1] Cheng, Z. (2012). *On Construction of a Mini Chinese Language System and Automatic Generation of Articles*. 中国科技论文在线. http://www.paper.edu.cn
+
+**核心贡献**：
+- 提出**微型汉语系统**，用 16 个汉字描述生态系统
+- 定义**概念三角形**：两个下层概念激活一个上层概念
+- 通过**句子强度**公式判断句子意义
+- 自动生成文章的完整规则层
+
+### [2] Cheng, Z. (2019). *Cognitive Development Theory*. American Academic Press, Ch.8, 188–206.
+
+**核心贡献**：
+- 将概念三角形理论扩展到**形式运算阶段**认知
+- 分析概念数量对认知模式的影响
+- 提出**注意力控制**与**能量消耗**关系
