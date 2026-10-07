@@ -1,0 +1,64 @@
+{"id": "T004", "name": "1整除一切", "category": "整除", "head": "divides(1,a)", "body": [], "keywords": ["divides", "整除", "整除一切"]}
+{"id": "T005", "name": "一切整除0", "category": "整除", "head": "divides(a,0)", "body": [], "keywords": ["divides", "一切整除", "整除"]}
+{"id": "T007", "name": "素数无穷多", "category": "素数", "head": "exists(p,and(prime(p),gt(p,n)))", "body": [], "keywords": ["exists", "素数", "素数无穷"]}
+{"id": "T015", "name": "贝祖等式", "category": "gcd", "head": "exists(xy,equals(plus(times(a,x),times(b,y)),gcd(a,b)))", "body": [], "keywords": ["exists", "gcd", "贝祖等式"]}
+{"id": "T020", "name": "2是素数", "category": "素数", "head": "prime(2)", "body": [], "keywords": ["prime", "是素数", "素数"]}
+{"id": "T021", "name": "3是素数", "category": "素数", "head": "prime(3)", "body": [], "keywords": ["prime", "是素数", "素数"]}
+{"id": "T022", "name": "5是素数", "category": "素数", "head": "prime(5)", "body": [], "keywords": ["prime", "是素数", "素数"]}
+{"id": "T023", "name": "7是素数", "category": "素数", "head": "prime(7)", "body": [], "keywords": ["prime", "是素数", "素数"]}
+{"id": "T024", "name": "11是素数", "category": "素数", "head": "prime(11)", "body": [], "keywords": ["prime", "是素数", "素数"]}
+{"id": "T025", "name": "2整除4", "category": "整除", "head": "divides(2,4)", "body": [], "keywords": ["divides", "整除"]}
+{"id": "T026", "name": "3整除6", "category": "整除", "head": "divides(3,6)", "body": [], "keywords": ["divides", "整除"]}
+{"id": "T027", "name": "4整除12", "category": "整除", "head": "divides(4,12)", "body": [], "keywords": ["divides", "整除"]}
+{"id": "T028", "name": "5整除15", "category": "整除", "head": "divides(5,15)", "body": [], "keywords": ["divides", "整除"]}
+{"id": "T029", "name": "6整除18", "category": "整除", "head": "divides(6,18)", "body": [], "keywords": ["divides", "整除"]}
+{"id": "T030", "name": "1非零", "category": "基础", "head": "nonzero(1)", "body": [], "keywords": ["nonzero", "基础", "非零"]}
+{"id": "T040", "name": "同余的自反性", "category": "同余", "head": "congruent(a,a,m)", "body": [], "keywords": ["congruent", "反性", "同余", "同余的自"]}
+{"id": "T042", "name": "欧拉函数定义", "category": "算术函数", "head": "equals(phi(n),count_coprime_below(n))", "body": [], "keywords": ["equals", "定义", "欧拉函数", "算术函数"]}
+{"id": "T045", "name": "约数个数的公式", "category": "算术函数", "head": "equals(tau(n),product_expr(n))", "body": [], "keywords": ["equals", "的公式", "算术函数", "约数个数"]}
+{"id": "T047", "name": "3-4-5是勾股三元组", "category": "丢番图", "head": "pythagorean(3,4,5)", "body": [], "keywords": ["pythagorean", "丢番图", "元组", "是勾股三"]}
+{"id": "T048", "name": "5-12-13是勾股三元组", "category": "丢番图", "head": "pythagorean(5,12,13)", "body": [], "keywords": ["pythagorean", "丢番图", "元组", "是勾股三"]}
+{"id": "T053", "name": "素数无穷多公理", "category": "素数", "head": "forall_n_exists_prime_gt_n", "body": [], "keywords": ["forall_n_exists_prime_gt_n", "多公理", "素数", "素数无穷"]}
+{"id": "T059", "name": "1到1的和", "category": "归纳", "head": "sum_to_n(1,1)", "body": [], "keywords": ["sum_to_n", "归纳", "的和"]}
+{"id": "T060", "name": "1到2的和", "category": "归纳", "head": "sum_to_n(2,3)", "body": [], "keywords": ["sum_to_n", "归纳", "的和"]}
+{"id": "T061", "name": "1到3的和", "category": "归纳", "head": "sum_to_n(3,6)", "body": [], "keywords": ["sum_to_n", "归纳", "的和"]}
+{"id": "T062", "name": "1到4的和", "category": "归纳", "head": "sum_to_n(4,10)", "body": [], "keywords": ["sum_to_n", "归纳", "的和"]}
+{"id": "T067", "name": "归纳假设形式", "category": "归纳", "head": "sum_to_n(k,s)", "body": [], "keywords": ["sum_to_n", "归纳", "归纳假设", "形式"]}
+{"id": "T002", "name": "整除的自反性", "category": "整除", "head": "divides(a,a)", "body": ["nonzero(a)"], "keywords": ["divides", "nonzero", "反性", "整除", "整除的自"]}
+{"id": "T009", "name": "算术基本定理", "category": "素数", "head": "has_unique_prime_factorization(n)", "body": ["gt(n,1)"], "keywords": ["gt", "has_unique_prime_factorization", "定理", "算术基本", "素数"]}
+{"id": "T011", "name": "同余定义", "category": "同余", "head": "congruent(a,b,m)", "body": ["divides(m,minus(a,b))"], "keywords": ["congruent", "divides", "同余", "同余定义"]}
+{"id": "T014", "name": "欧几里得算法", "category": "gcd", "head": "equals(gcd(a,b),gcd(b,mod(a,b)))", "body": ["nonzero(b)"], "keywords": ["equals", "gcd", "nonzero", "欧几里得", "算法"]}
+{"id": "T018", "name": "素数平方根无理性", "category": "无理数", "head": "irrational(sqrt(p))", "body": ["prime(p)"], "keywords": ["irrational", "prime", "无理数", "根无理性", "素数平方"]}
+{"id": "T019", "name": "sqrt(2)无理性", "category": "无理数", "head": "irrational(sqrt(2))", "body": ["prime(2)"], "keywords": ["irrational", "prime", "无理性", "无理数"]}
+{"id": "T033", "name": "整除与负数", "category": "整除", "head": "divides(a,minus(0,b))", "body": ["divides(a,b)"], "keywords": ["divides", "整除", "整除与负"]}
+{"id": "T037", "name": "互质的定义", "category": "gcd", "head": "equals(gcd(a,b),1)", "body": ["coprime(a,b)"], "keywords": ["coprime", "equals", "gcd", "互质的定"]}
+{"id": "T041", "name": "同余与整除", "category": "同余", "head": "divides(m,a)", "body": ["congruent(a,0,m)"], "keywords": ["congruent", "divides", "同余", "同余与整"]}
+{"id": "T044", "name": "欧拉函数的积性", "category": "算术函数", "head": "equals(phi(times(m,n)),times(phi(m),phi(n)))", "body": ["coprime(m,n)"], "keywords": ["coprime", "equals", "欧拉函数", "的积性", "算术函数"]}
+{"id": "T046", "name": "本原勾股三元组参数化", "category": "丢番图", "head": "pythagorean(a,b,c)", "body": ["exists(mn,and(gt(m,n),equals(gcd(m,n),1),equals(a,minus(times(m,m),times(n,n))),equals(b,times(2,times(m,n))),equals(c,plus(times(m,m),times(n,n)))))"], "keywords": ["exists", "pythagorean", "三元组参", "丢番图", "数化", "本原勾股"]}
+{"id": "T049", "name": "四平方和", "category": "丢番图", "head": "sum_of_4_squares(n)", "body": ["ge(n,0)"], "keywords": ["ge", "sum_of_4_squares", "丢番图", "四平方和"]}
+{"id": "T050", "name": "佩尔方程有解", "category": "丢番图", "head": "exists(xy,equals(minus(times(x,x),times(D,times(y,y))),1))", "body": ["non_square_positive(D)"], "keywords": ["exists", "non_square_positive", "丢番图", "佩尔方程", "有解"]}
+{"id": "T052", "name": "素数无穷多定义", "category": "素数", "head": "prime_infinite", "body": ["forall_n_exists_prime_gt_n"], "keywords": ["forall_n_exists_prime_gt_n", "prime_infinite", "多定义", "素数", "素数无穷"]}
+{"id": "T054", "name": "假设素数有限", "category": "反证法", "head": "prime_finite", "body": ["not_prime_infinite"], "keywords": ["not_prime_infinite", "prime_finite", "假设素数", "反证法", "有限"]}
+{"id": "T055", "name": "有限素数有最大者", "category": "反证法", "head": "exists_max_prime", "body": ["prime_finite"], "keywords": ["exists_max_prime", "prime_finite", "反证法", "有最大者", "有限素数"]}
+{"id": "T056", "name": "构造p!+1", "category": "反证法", "head": "exists_p_factorial_plus_1", "body": ["exists_max_prime"], "keywords": ["exists_max_prime", "exists_p_factorial_plus_1", "反证法", "构造"]}
+{"id": "T057", "name": "p!+1有素因子q", "category": "反证法", "head": "exists_prime_q_divides_factorial_plus_1", "body": ["exists_p_factorial_plus_1"], "keywords": ["exists_p_factorial_plus_1", "exists_prime_q_divides_factorial_plus_1", "反证法", "有素因子"]}
+{"id": "T063", "name": "sum递推（具体值）", "category": "归纳", "head": "sum_to_n(plus(n,1),plus(S,plus(n,1)))", "body": ["sum_to_n(n,S)"], "keywords": ["sum_to_n", "具体值", "归纳", "递推"]}
+{"id": "T001", "name": "整除的传递性", "category": "整除", "head": "divides(a,c)", "body": ["divides(a,b)", "divides(b,c)"], "keywords": ["divides", "整除", "整除的传", "递性"]}
+{"id": "T003", "name": "整除的线性组合", "category": "整除", "head": "divides(a,plus(times(m,b),times(n,c)))", "body": ["divides(a,b)", "divides(a,c)"], "keywords": ["divides", "性组合", "整除", "整除的线"]}
+{"id": "T006", "name": "素数定义", "category": "素数", "head": "prime(p)", "body": ["gt(p,1)", "no_proper_divisor(p)"], "keywords": ["gt", "no_proper_divisor", "prime", "素数", "素数定义"]}
+{"id": "T010", "name": "费马小定理", "category": "素数", "head": "congruent(power(a,minus(p,1)),1,p)", "body": ["prime(p)", "coprime(a,p)"], "keywords": ["congruent", "coprime", "prime", "素数", "费马小定"]}
+{"id": "T012", "name": "同余的加法", "category": "同余", "head": "congruent(plus(a,c),plus(b,d),m)", "body": ["congruent(a,b,m)", "congruent(c,d,m)"], "keywords": ["congruent", "同余", "同余的加"]}
+{"id": "T013", "name": "同余的乘法", "category": "同余", "head": "congruent(times(a,c),times(b,d),m)", "body": ["congruent(a,b,m)", "congruent(c,d,m)"], "keywords": ["congruent", "同余", "同余的乘"]}
+{"id": "T016", "name": "gcd与lcm关系", "category": "gcd", "head": "equals(times(gcd(a,b),lcm(a,b)),times(a,b))", "body": ["gt(a,0)", "gt(b,0)"], "keywords": ["equals", "gcd", "gt", "关系"]}
+{"id": "T017", "name": "互质与整除", "category": "gcd", "head": "divides(a,c)", "body": ["coprime(a,b)", "divides(a,times(b,c))"], "keywords": ["coprime", "divides", "gcd", "互质与整"]}
+{"id": "T031", "name": "整除的反对称性", "category": "整除", "head": "equals(abs(a),abs(b))", "body": ["divides(a,b)", "divides(b,a)"], "keywords": ["divides", "equals", "对称性", "整除", "整除的反"]}
+{"id": "T034", "name": "整除与gcd", "category": "gcd", "head": "divides(a,gcd(b,c))", "body": ["divides(a,b)", "divides(a,c)"], "keywords": ["divides", "gcd", "整除与"]}
+{"id": "T035", "name": "整除与lcm", "category": "gcd", "head": "divides(lcm(a,b),c)", "body": ["divides(a,c)", "divides(b,c)"], "keywords": ["divides", "gcd", "整除与"]}
+{"id": "T036", "name": "整除与商", "category": "整除", "head": "exists(c,equals(b,times(a,c)))", "body": ["divides(a,b)", "nonzero(a)"], "keywords": ["divides", "exists", "nonzero", "整除", "整除与商"]}
+{"id": "T039", "name": "同余的传递性", "category": "同余", "head": "congruent(a,c,m)", "body": ["congruent(a,b,m)", "congruent(b,c,m)"], "keywords": ["congruent", "同余", "同余的传", "递性"]}
+{"id": "T043", "name": "素数幂的欧拉函数", "category": "算术函数", "head": "equals(phi(power(p,k)),minus(power(p,k),power(p,minus(k,1))))", "body": ["prime(p)", "ge(k,1)"], "keywords": ["equals", "ge", "prime", "欧拉函数", "算术函数", "素数幂的"]}
+{"id": "T058", "name": "推出矛盾", "category": "反证法", "head": "contradiction", "body": ["exists_prime_q_divides_factorial_plus_1", "exists_max_prime"], "keywords": ["contradiction", "exists_max_prime", "exists_prime_q_divides_factorial_plus_1", "反证法", "推出矛盾"]}
+{"id": "T064", "name": "矛盾律", "category": "逻辑", "head": "contradiction", "body": ["true", "false"], "keywords": ["contradiction", "false", "true", "矛盾律", "逻辑"]}
+{"id": "T008", "name": "欧几里得引理", "category": "素数", "head": "divides(p,b)", "body": ["prime(p)", "divides(p,times(a,b))", "not_divides(p,a)"], "keywords": ["divides", "not_divides", "prime", "引理", "欧几里得", "素数"]}
+{"id": "T032", "name": "整除与大小", "category": "整除", "head": "le(a,b)", "body": ["divides(a,b)", "gt(a,0)", "gt(b,0)"], "keywords": ["divides", "gt", "le", "整除", "整除与大"]}
+{"id": "T038", "name": "互异素数互质", "category": "素数", "head": "coprime(p,q)", "body": ["prime(p)", "prime(q)", "not_equals(p,q)"], "keywords": ["coprime", "not_equals", "prime", "互异素数", "互质", "素数"]}

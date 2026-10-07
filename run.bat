@@ -1,0 +1,1 @@
+python adaptive_prover.py --data theorems.jsonl theorems/M1_divisibility.jsonl theorems/M2_primes.jsonl theorems/M3_gcd_lcm.jsonl --prove "prime(3)" --benchmark

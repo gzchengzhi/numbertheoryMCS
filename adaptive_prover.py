@@ -8,6 +8,7 @@ Created on Tue Oct  6 13:01:48 2026
 """
 自适应证明器：多轮检索 + 权重学习
 """
+import os
 import argparse
 from typing import List, Optional
 
@@ -93,7 +94,9 @@ class AdaptiveProver:
 # ---------- CLI ----------
 def cli():
     parser = argparse.ArgumentParser(description="自适应定理证明器")
-    parser.add_argument('--data', type=str, default='theorems.jsonl')
+    parser.add_argument('--data', type=str, nargs='+',
+                        default=['theorems.jsonl'],
+                        help='可以指定多个 JSONL 文件')
     parser.add_argument('--prove', type=str, required=True)
     parser.add_argument('--strategy', choices=['auto', 'direct', 'contradiction', 'induction'],
                         default='auto')
@@ -108,7 +111,13 @@ def cli():
     args = parser.parse_args()
 
     store = AdaptiveStore()
-    store.load_jsonl(args.data)
+    for path in args.data:
+        if os.path.exists(path):
+            store.load_jsonl(path)
+            print(f"  加载 {path}: {len(store.clauses)} 条")
+        else:
+            print(f"  [警告] 文件不存在: {path}")
+
 
     if args.reset_weights:
         store.theorem_weights.clear()
