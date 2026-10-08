@@ -1,6 +1,7 @@
-git status
+chcp 65001
+
 git add .
-git commit -m "v5.0: 扩展定理库到 404 条（M7-M9）"
+git commit -m "v6.0: 自然语言接口（规则 + 本地 Qwen 3.0-4B）"
 git push
-git tag -a v5.0 -m "v5.0: 404 条定理 + 计算引擎"
-git push origin v5.0
+git tag -a v6.0 -m "v6.0: 自然语言接口"
+git push origin v6.0
