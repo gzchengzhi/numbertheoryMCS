@@ -410,6 +410,24 @@ class Prover:
         self.visited.add(goal_key)
 
         db = extra_db if extra_db is not None else self.db
+        
+        # ---- 计算引擎：如果目标含具体常量，先尝试计算 ----
+        try:
+            from arithmetic_engine import evaluate_predicate
+            result = evaluate_predicate(goal)
+            if result is True:
+                # 计算成功，返回"公理证明"
+                computed_clause = HornClause(
+                    "COMPUTED", f"计算: {goal}",
+                    goal, [], category="计算"
+                )
+                step = ProofStep(computed_clause, {}, goal, depth, strategy)
+                return path + [step]
+            elif result is False:
+                # 计算为假，该路径失败
+                return None
+        except Exception:
+            pass
 
         for clause in db:
             new_subst = unify(clause.head, goal, dict(subst))

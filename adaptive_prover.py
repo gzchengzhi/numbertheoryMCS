@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Oct  6 13:01:48 2026
-
-@author: gzche
-"""
-
 """
 自适应证明器：多轮检索 + 权重学习
 """
