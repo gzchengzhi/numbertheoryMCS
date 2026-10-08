@@ -1,6 +1,6 @@
 git status
 git add .
-git commit -m "v4.0: 294 定理 + 计算引擎"
+git commit -m "v5.0: 扩展定理库到 404 条（M7-M9）"
 git push
-git tag -a v4.0 -m "v4.0 完整版"
-git push origin v4.0
+git tag -a v5.0 -m "v5.0: 404 条定理 + 计算引擎"
+git push origin v5.0

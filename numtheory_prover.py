@@ -467,9 +467,6 @@ class Prover:
     # -------- 反证法 --------
     def prove_by_contradiction(self, goal: Pred,
                                verbose: bool = False) -> Optional[List[ProofStep]]:
-        """
-        反证法：假设 NOT goal，尝试推出 contradiction。
-        """
         if goal.name.startswith("not_"):
             return None
 
@@ -478,22 +475,27 @@ class Prover:
             "ASSUME", f"假设 {negated}",
             negated, [], category="反证法假设",
         )
-        # 用假设 + 库里已有反证链
         temp_db = self.db + [assumption]
 
         if verbose:
             print(f"  [反证法] 假设: {negated}")
 
-        # 关键：尝试用"假设 + 反证链"推出 contradiction
         self.step_count = 0
         self.visited = set()
         contra = Pred("contradiction", ())
-        proof = self._prove_recursive(contra, {}, 0, [], strategy="contradiction",
+        proof = self._prove_recursive(contra, {}, 0, [],
+                                      strategy="contradiction",
                                       extra_db=temp_db)
 
-        # 过滤掉假设本身（它在证明里只做起点）
-        if proof and verbose:
-            print(f"  [反证法] 推出 contradiction，原目标成立")
+        # ---- 关键修复：验证证明链必须包含 ASSUME ----
+        if proof is not None:
+            used_ids = {step.clause.id for step in proof}
+            if "ASSUME" not in used_ids:
+                if verbose:
+                    print(f"  [反证法] 证明链未用到假设，判定失败")
+                return None
+            if verbose:
+                print(f"  [反证法] 推出 contradiction（用到假设）")
 
         return proof
 

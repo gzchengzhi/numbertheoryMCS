@@ -5,7 +5,7 @@
 {"id":"M2-005","name":"素数大于1","category":"M2.1","head":"gt(p,1)","body":["prime(p)"],"keywords":["素数","大小"]}
 {"id":"M2-006","name":"素数的约数只有1和p","category":"M2.1","head":"or(equals(d,1),equals(d,p))","body":["prime(p)","divisor(d,p)"],"keywords":["素数","约数"]}
 {"id":"M2-007","name":"合数有真因子","category":"M2.1","head":"exists(d,and(divides(d,n),and(gt(d,1),lt(d,n))))","body":["composite(n)"],"keywords":["合数","真因子"]}
-{"id":"M2-008","name":"素数不能分解","category":"M2.1","head":"contradiction","body":["prime(p)","equals(p,times(a,b))","gt(a,1)","gt(b,1)"],"keywords":["素数","分解"]}
+{"id":"M2-008","name":"素数不能分解","category":"M2.1","head":"not_prime_decomposable(p)","body":["prime(p)","equals(p,times(a,b))","gt(a,1)","gt(b,1)"],"keywords":["素数","分解"]}
 {"id":"M2-009","name":"两个素数相等iff互相整除","category":"M2.1","head":"equals(p,q)","body":["prime(p)","prime(q)","divides(p,q)"],"keywords":["素数","整除"]}
 {"id":"M2-010","name":"素数幂不是素数","category":"M2.1","head":"not_prime(power(p,k))","body":["prime(p)","gt(k,1)"],"keywords":["素数","幂"]}
 {"id":"M2-011","name":"素数的倍数不是素数","category":"M2.1","head":"not_prime(times(p,k))","body":["prime(p)","gt(k,1)"],"keywords":["素数","倍数"]}
