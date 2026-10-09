@@ -370,12 +370,64 @@ class Prover:
         self.step_count = 0
         self.max_steps = 50000
         self.visited: Set[str] = set()
+        
+    def _to_skolem_pred(self, pred, all_vars):
+        """把谓词里的所有变量转成 Skolem 常量"""
+        def convert(t):
+            if isinstance(t, Var):
+                return Const(f"SKOLEM_{t.name}")
+            if isinstance(t, Const):
+                return Const(t.name, tuple(convert(a) for a in t.args))
+            return t
+        return Pred(pred.name, tuple(convert(a) for a in pred.args))
+    
+    def _collect_vars(self, term) -> set:
+        """收集项里的所有变量名"""
+        result = set()
+        def walk(t):
+            if isinstance(t, Var):
+                result.add(t.name)
+            elif isinstance(t, Const):
+                for a in t.args:
+                    walk(a)
+            elif isinstance(t, Pred):
+                for a in t.args:
+                    walk(a)
+        walk(term)
+        return result
 
     # -------- 直接证明 --------
     def prove_direct(self, goal: Pred) -> Optional[List[ProofStep]]:
         self.step_count = 0
         self.visited = set()
         return self._prove_recursive(goal, {}, 0, [], strategy="direct")
+
+    def _rename_clause(self, clause: HornClause, depth: int) -> HornClause:
+        """把定理里的变量重命名为全新名字（α-转换）"""
+        var_map = {}
+        
+        def rename_term(t):
+            if isinstance(t, Var):
+                if t.name not in var_map:
+                    var_map[t.name] = Var(f"__v{depth}_{len(var_map)}")
+                return var_map[t.name]
+            if isinstance(t, Const):
+                return Const(t.name, tuple(rename_term(a) for a in t.args))
+            return t
+        
+        def rename_pred(p):
+            return Pred(p.name, tuple(rename_term(a) for a in p.args))
+        
+        new_head = rename_pred(clause.head)
+        new_body = [rename_pred(b) for b in clause.body]
+        
+        return HornClause(
+            id=clause.id,
+            name=clause.name,
+            head=new_head,
+            body=new_body,
+            category=clause.category,
+        )
 
     def _prove_recursive(self, goal: Pred, subst: Dict[Var, Any],
                          depth: int, path: List[ProofStep],
@@ -430,22 +482,25 @@ class Prover:
             pass
 
         for clause in db:
-            new_subst = unify(clause.head, goal, dict(subst))
+            # === 变量重命名 ===
+            renamed_clause = self._rename_clause(clause, depth)
+            # ==================
+            
+            new_subst = unify(renamed_clause.head, goal, dict(subst))
             if new_subst is None:
                 continue
-
-            step = ProofStep(clause, new_subst, goal, depth, strategy)
+            
+            step = ProofStep(renamed_clause, new_subst, goal, depth, strategy)
             new_path = path + [step]
-
-            if not clause.body:
+            
+            if not renamed_clause.body:
                 return new_path
-
-            # 递归证明所有 body
+            
             body_success = True
             body_path = new_path
             current_subst = new_subst
-
-            for body_pred in clause.body:
+            
+            for body_pred in renamed_clause.body:
                 body_pred_subst = substitute(body_pred, current_subst)
                 result = self._prove_recursive(
                     body_pred_subst, current_subst, depth + 1, body_path,
@@ -594,6 +649,32 @@ class Prover:
                 return proof
 
         return None
+    
+    def prove_with_premises(self, goal, premises, strategy="auto", var=None, base_value="1", verbose=False):
+        all_vars = self._collect_vars(goal)
+        for p in premises:
+            all_vars |= self._collect_vars(p)
+        
+        skolem_goal = self._to_skolem_pred(goal, all_vars)
+        temp_clauses = []
+        for i, p in enumerate(premises):
+            skolem_p = self._to_skolem_pred(p, all_vars)
+            temp_clauses.append(HornClause(f"PREM_{i}", f"前提 {p}", skolem_p, [], category="前提"))
+        
+        saved_db = self.db
+        self.db = self.db + temp_clauses
+        
+        # === DEBUG ===
+        print(f"[DEBUG] self.db 大小: {len(self.db)}")
+        print(f"[DEBUG] self.db 全部 id: {[c.id for c in self.db]}")
+        print(f"[DEBUG] 目标: {skolem_goal}")
+        # =============
+        
+        try:
+            proof = self.prove(skolem_goal, strategy=strategy, var=var, base_value=base_value, verbose=verbose)
+        finally:
+            self.db = saved_db
+        return proof
 
 
 # ============================================================
@@ -705,9 +786,43 @@ def cli():
     parser.add_argument('--base', type=str, default='1')
     parser.add_argument('--max_depth', type=int, default=12)
     parser.add_argument('--demo', action='store_true')
+    parser.add_argument('--premise', type=str, nargs='*', default=[],
+                    help='前提条件（可以多个）')
     args = parser.parse_args()
 
     db = build_theorem_db()
+    # 加载 theorems/*.jsonl（M1-M9 + B_basic）
+    import glob as _glob
+    import json as _json
+    for _path in sorted(_glob.glob('theorems/*.jsonl')):
+        try:
+            with open(_path, encoding='utf-8') as _f:
+                for _line in _f:
+                    _line = _line.strip()
+                    if not _line:
+                        continue
+                    try:
+                        _obj = _json.loads(_line)
+                    except _json.JSONDecodeError:
+                        continue
+                    _head = parse_goal(_obj['head'])
+                    if _head is None:
+                        continue
+                    _body = []
+                    for _b_str in _obj.get('body', []):
+                        _b = parse_goal(_b_str)
+                        if _b is not None:
+                            _body.append(_b)
+                    db.append(HornClause(
+                        id=_obj['id'],
+                        name=_obj.get('name', _obj['id']),
+                        head=_head,
+                        body=_body,
+                        category=_obj.get('category', ''),
+                    ))
+        except FileNotFoundError:
+            continue
+    print(f"[cli] 加载了 {len(db)} 条定理")
 
     if args.prove:
         prover = Prover(db, max_depth=args.max_depth)
@@ -716,6 +831,19 @@ def cli():
             print(f"无法解析: {args.prove}")
             return
         var = Var(args.var) if args.var else None
+        
+        if args.premise:
+            premises = [parse_goal(p) for p in args.premise]
+            premises = [p for p in premises if p is not None]
+            proof = prover.prove_with_premises(
+                goal, premises, strategy=args.strategy, var=var, verbose=True
+            )
+        else:
+            proof = prover.prove(goal, strategy=args.strategy, var=var, verbose=True)
+
+        print_proof(proof, goal)
+        return
+        
         proof = prover.prove(goal, strategy=args.strategy, var=var,
                              base_value=args.base, verbose=True)
         print_proof(proof, goal)

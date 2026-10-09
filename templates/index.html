@@ -12,40 +12,60 @@
             <p class="subtitle">基于 SLD 归结 + 反向搜索 · 零依赖 · 可解释</p>
         </header>
 
-        <section class="input-section">
-            <div class="input-row">
-                <label>证明目标</label>
-                <input type="text" id="goal" placeholder="如：prime(3)、irrational(sqrt(2))、sum_to_n(k, S)"
-                       value="irrational(sqrt(2))">
-            </div>
+<section class="input-section">
+    <!-- Tab 切换 -->
+    <div class="tabs">
+        <button class="tab active" data-tab="nl">自然语言</button>
+        <button class="tab" data-tab="formal">形式化</button>
+    </div>
 
-            <div class="input-row">
-                <label>策略</label>
-                <select id="strategy">
-                    <option value="auto">auto（自动选择）</option>
-                    <option value="direct">direct（直接证明）</option>
-                    <option value="contradiction">contradiction（反证法）</option>
-                    <option value="induction">induction（数学归纳法）</option>
-                </select>
+    <!-- 自然语言输入 -->
+    <div id="tab-nl" class="tab-content active">
+        <div class="input-row">
+            <label>问题</label>
+            <input type="text" id="nl-query"
+                   placeholder="如：证明根号2是无理数、17是不是质数、证明素数无穷多"
+                   value="证明根号2是无理数">
+        </div>
+        <div class="input-row">
+            <label>
+                <input type="checkbox" id="use-llm" checked>
+                使用本地 LLM（Qwen 3.0-4B）
+            </label>
+        </div>
+        <button id="nl-prove-btn">开始证明</button>
+        <div class="examples">
+            <span>示例：</span>
+            <a href="#" class="nl-example" data-q="证明根号2是无理数">证明√2是无理数</a>
+            <a href="#" class="nl-example" data-q="17是不是质数">17是不是质数</a>
+            <a href="#" class="nl-example" data-q="证明素数无穷多">证明素数无穷多</a>
+            <a href="#" class="nl-example" data-q="验证7同余于2模5">7同余于2模5</a>
+            <a href="#" class="nl-example" data-q="帮我证明一下√5不是有理数">帮我证明√5不是有理数</a>
+        </div>
+    </div>
 
-                <label style="margin-left: 20px;">归纳变量</label>
-                <input type="text" id="var" placeholder="如 k" style="width: 80px;">
-            </div>
-
-            <button id="prove-btn">开始证明</button>
-
-            <div class="examples">
-                <span>示例：</span>
-                <a href="#" class="example" data-goal="prime(3)">prime(3)</a>
-                <a href="#" class="example" data-goal="prime(5)">prime(5)</a>
-                <a href="#" class="example" data-goal="irrational(sqrt(2))">irrational(sqrt(2))</a>
-                <a href="#" class="example" data-goal="irrational(sqrt(5))">irrational(sqrt(5))</a>
-                <a href="#" class="example" data-goal="divides(1, x)">divides(1, x)</a>
-                <a href="#" class="example" data-goal="prime_infinite" data-strategy="contradiction">prime_infinite（反证）</a>
-                <a href="#" class="example" data-goal="sum_to_n(k, S)" data-strategy="induction" data-var="k">sum_to_n（归纳）</a>
-            </div>
-        </section>
-
+    <!-- 形式化输入（原有的） -->
+    <div id="tab-formal" class="tab-content">
+        <div class="input-row">
+            <label>目标</label>
+            <input type="text" id="goal"
+                   placeholder="如：prime(3)、irrational(sqrt(2))"
+                   value="irrational(sqrt(2))">
+        </div>
+        <div class="input-row">
+            <label>策略</label>
+            <select id="strategy">
+                <option value="auto">auto</option>
+                <option value="direct">direct</option>
+                <option value="contradiction">contradiction</option>
+                <option value="induction">induction</option>
+            </select>
+            <label style="margin-left: 20px;">变量</label>
+            <input type="text" id="var" placeholder="k" style="width: 80px;">
+        </div>
+        <button id="prove-btn">开始证明</button>
+    </div>
+</section>
         <section class="result-section">
             <div id="status"></div>
             <div id="proof-container"></div>
@@ -58,6 +78,100 @@
     </div>
 
     <script>
+// Tab 切换
+document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    });
+});
+
+// 自然语言示例
+document.querySelectorAll('.nl-example').forEach(el => {
+    el.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.getElementById('nl-query').value = el.dataset.q;
+        proveNL();
+    });
+});
+
+// 自然语言提交
+const nlQuery = document.getElementById('nl-query');
+const nlProveBtn = document.getElementById('nl-prove-btn');
+const useLlm = document.getElementById('use-llm');
+
+nlProveBtn.addEventListener('click', proveNL);
+nlQuery.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') proveNL();
+});
+
+async function proveNL() {
+    const query = nlQuery.value.trim();
+    if (!query) return;
+
+    statusDiv.innerHTML = '<span class="loading">解析中...</span>';
+    proofDiv.innerHTML = '';
+
+    try {
+        const res = await fetch('/api/nl_prove', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                query: query,
+                use_llm: useLlm.checked,
+            }),
+        });
+        const data = await res.json();
+        renderNLResult(data);
+    } catch (err) {
+        statusDiv.innerHTML = `<span class="error">请求失败: ${err.message}</span>`;
+    }
+}
+
+function renderNLResult(data) {
+    if (!data.success) {
+        let html = `<span class="error">✗ ${data.error || '证明失败'}</span>`;
+        if (data.parsed) {
+            html += `<div class="parsed-info">
+                <strong>解析结果：</strong>
+                <code>${escapeHtml(data.parsed.goal || '')}</code>
+            </div>`;
+        }
+        statusDiv.innerHTML = html;
+        return;
+    }
+
+    let html = `<span class="success">✓ 证明成功</span>`;
+    html += `<div class="parsed-info">`;
+    html += `<div><strong>目标：</strong><code>${escapeHtml(data.goal)}</code></div>`;
+    html += `<div><strong>策略：</strong>${escapeHtml(data.strategy)}</div>`;
+    if (data.parsed.explanation) {
+        html += `<div><strong>理解：</strong>${escapeHtml(data.parsed.explanation)}</div>`;
+    }
+    html += `</div>`;
+    statusDiv.innerHTML = html;
+
+    // 复用之前的证明链渲染
+    let proofHtml = '<h2>证明链</h2><ol class="proof-list">';
+    data.proof.forEach((step, i) => {
+        const indent = Math.min(step.depth, 4) * 20;
+        proofHtml += `<li class="proof-step" style="margin-left:${indent}px">`;
+        proofHtml += `<div class="step-header">`;
+        proofHtml += `<span class="step-num">[${i+1}]</span> `;
+        proofHtml += `<span class="step-name">${escapeHtml(step.name)}</span> `;
+        proofHtml += `<span class="step-id">（${step.id}）</span>`;
+        proofHtml += `</div>`;
+        if (step.body && step.body.length > 0) {
+            proofHtml += `<div class="step-body"><strong>前提：</strong>${step.body.map(escapeHtml).join('，')}</div>`;
+        }
+        proofHtml += `<div class="step-head"><strong>结论：</strong><code>${escapeHtml(step.head)}</code></div>`;
+        proofHtml += `</li>`;
+    });
+    proofHtml += '</ol>';
+    proofDiv.innerHTML = proofHtml;
+}
         const goalInput = document.getElementById('goal');
         const strategySelect = document.getElementById('strategy');
         const varInput = document.getElementById('var');

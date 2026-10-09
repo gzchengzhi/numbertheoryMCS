@@ -20,37 +20,41 @@ from typing import Optional, Dict
 # LLM 解析层
 # ============================================================
 
-PARSE_PROMPT = """把下面的中文数学问题转换成 JSON 格式。
+PARSE_PROMPT = """把中文数学问题转成 JSON。
 
-【谓词表】
-prime(p)              p 是素数
-divides(a,b)          a 整除 b
-congruent(a,b,m)      a 同余于 b 模 m
-equals(a,b)           a 等于 b
-irrational(x)         x 是无理数
-- quadratic_residue(a, p)         a 是 p 的二次剩余
-- legendre_symbol(a, p)           勒让德符号
-- primitive_root(g, n)            g 是 n 的原根
-- pythagorean(a, b, c)            (a,b,c) 是勾股三元组
-- sum_to_n(n, S)                  1 到 n 的和是 S
-- prime_infinite                  素数无穷多
+【谓词】
+prime(p), composite(n), even(n), odd(n), divides(a,b), coprime(a,b),
+congruent(a,b,m), equals(a,b), irrational(x), quadratic_residue(a,p),
+legendre_symbol(a,p), primitive_root(g,n), pythagorean(a,b,c),
+sum_to_n(n,S), prime_infinite, exists(x,P(x)), and(P1,P2), or(P1,P2)
 
-可用的函数：
-- sqrt(x), power(a, n), plus(a, b), minus(a, b), times(a, b)
-- gcd(a, b), phi(n), tau(n), factorial(n)
+【函数】
+sqrt(x), power(a,n), plus(a,b), minus(a,b), times(a,b), gcd(a,b), phi(n), tau(n)
 
-可用的策略：
-- direct        直接证明
-- contradiction 反证法
-- induction     数学归纳法（需要变量）
+【策略】
+direct=默认, contradiction=无穷多/不存在, induction=对所有n
 
-用户输入：{query}
+【示例】
+输入：证明任意奇数可以表示为两个偶数之和加1
+输出：{"goal":"exists(ab,and(even(a),and(even(b),equals(plus(plus(a,b),1),n))))","strategy":"direct","var":null,"premises":["odd(n)"],"explanation":"奇数=两偶数之和加1"}
 
-请输出 JSON 格式：
-{{"goal": "形式化目标", "strategy": "auto", "var": null, "explanation": "简要说明"}}
+输入：证明根号2是无理数
+输出：{"goal":"irrational(sqrt(2))","strategy":"direct","var":null,"premises":[],"explanation":"证明√2无理"}
 
-只输出 JSON，不要其他内容。
-"""
+输入：证明素数无穷多
+输出：{"goal":"prime_infinite","strategy":"contradiction","var":null,"premises":[],"explanation":"素数无穷多"}
+
+输入：证明任意偶数可以表示为两个奇数之和
+输出：{"goal":"exists(ab,and(odd(a),and(odd(b),equals(plus(a,b),n))))","strategy":"direct","var":null,"premises":["even(n)"],"explanation":"偶数=两奇数之和"}
+
+【输出格式约束】
+- exists 的格式是 exists(变量名, 谓词)，例如 exists(ab, and(...))
+- and 的格式是 and(谓词1, 谓词2)
+- 不要引入多余的变量
+- 严格参照示例的格式
+
+输入：{query}
+输出："""
 
 
 def parse_with_local_llm(query: str,
@@ -60,7 +64,7 @@ def parse_with_local_llm(query: str,
     import urllib.request
     import urllib.error
 
-    prompt = PARSE_PROMPT.format(query=query)
+    prompt = PARSE_PROMPT.replace("{query}", query)
 
     payload = {
         "model": model,
@@ -69,7 +73,8 @@ def parse_with_local_llm(query: str,
             {"role": "user", "content": prompt},
         ],
         "temperature": 0,
-        "max_tokens": 500,
+        "max_tokens": 1500,
+        "chat_template_kwargs": {"enable_thinking": False},  # 关闭思考
         "stream": False,
     }
 
@@ -80,9 +85,18 @@ def parse_with_local_llm(query: str,
             headers={"Content-Type": "application/json"},
             method="POST",
         )
-        with urllib.request.urlopen(req, timeout=60) as resp:
+        with urllib.request.urlopen(req, timeout=180) as resp:
             data = json.loads(resp.read().decode('utf-8'))
         text = data["choices"][0]["message"]["content"]
+        with urllib.request.urlopen(req, timeout=180) as resp:
+            data = json.loads(resp.read().decode('utf-8'))
+        text = data["choices"][0]["message"]["content"]
+        
+        # === 调试：打印原始输出 ===
+        print(f"  [LLM 原始输出]: {text[:500]}")
+        # ========================
+        
+
         return _extract_json(text)
     except Exception as e:
         print(f"[本地 LLM 错误] {e}")
@@ -90,24 +104,42 @@ def parse_with_local_llm(query: str,
 
 
 def _extract_json(text: str) -> Optional[Dict]:
-    """从 LLM 输出里抽 JSON"""
     text = text.strip()
-    # 去掉 markdown 代码块
-    if text.startswith("```"):
-        text = re.sub(r'^```\w*\n?', '', text)
-        text = re.sub(r'\n?```$', '', text)
+    
+    # 去掉 markdown
+    if "```" in text:
+        m = re.search(r'```(?:json)?\s*\n?(.*?)\n?```', text, re.DOTALL)
+        if m:
+            text = m.group(1).strip()
+    
     # 直接尝试
     try:
         return json.loads(text)
     except json.JSONDecodeError:
         pass
-    # 找第一个 { 到最后一个 }
+    
+    # 找 { ... }
     m = re.search(r'\{.*\}', text, re.DOTALL)
     if m:
         try:
             return json.loads(m.group(0))
         except json.JSONDecodeError:
             pass
+    
+    # 尝试补全被截断的 JSON
+    if text.startswith('{') and not text.endswith('}'):
+        # 补全 premises 和 explanation
+        if '"premises":' in text and '"premises":[' not in text:
+            text = text.rstrip(',') + ', "premises": [], "explanation": ""}'
+        elif text.endswith(','):
+            text = text[:-1] + '}'
+        else:
+            text = text + '}'
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError:
+            pass
+    
     return None
 
 
@@ -153,6 +185,27 @@ RULES = [
                 "strategy": "induction",
                 "var": "k",
                 "explanation": "证明前 k 项和"}),
+    # 奇数 = 两偶数之和加1
+    (r'奇数.*两个偶数.*加\s*1|奇数.*偶数之和.*加\s*1',
+     lambda m: {"goal": "exists(ab,and(even(a),and(even(b),equals(plus(plus(a,b),1),n))))",
+                "strategy": "direct",
+                "premises": ["odd(n)"],
+                "explanation": "奇数=两偶数之和加1"}),
+    
+    # 偶数 = 两奇数之和
+    (r'偶数.*两个奇数|偶数.*奇数之和',
+     lambda m: {"goal": "exists(ab,and(odd(a),and(odd(b),equals(plus(a,b),n))))",
+                "strategy": "direct",
+                "premises": ["even(n)"],
+                "explanation": "偶数=两奇数之和"}),
+    # 任意奇数之和
+    (r'(\d+)\s*个奇数.*和|(\d+)\s*个奇数.*之和',
+     lambda m: {
+         "goal": ...,  # 根据数量生成嵌套
+         "strategy": "direct",
+         "premises": ["odd(a)", "odd(b)", ...],
+         "explanation": "..."
+     }),
 ]
 
 
@@ -243,7 +296,23 @@ def prove_query(query: str, use_llm: bool = True,
     ap = AdaptiveProver(store, max_rounds=3, base_top_k=20)
     var_obj = Var(var) if var else None
 
-    proof = ap.prove(goal, strategy=strategy, var=var_obj, verbose=False)
+    premises = parsed.get("premises", [])
+    premise_objs = [parse_goal(p) for p in premises] if premises else []
+    premise_objs = [p for p in premise_objs if p is not None]
+
+    if premise_objs:
+        # 用底层 Prover 支持前提
+        from numtheory_prover import Prover, build_theorem_db
+        db = list(store.clauses)
+        prover2 = Prover(db, max_depth=12)
+        proof = prover2.prove_with_premises(
+            parse_goal(goal), premise_objs,
+            strategy=strategy, var=var_obj, verbose=False
+        )
+    else:
+        proof = ap.prove(goal, strategy=strategy, var=var_obj, verbose=False)
+
+
     # 如果失败且策略不是 direct，尝试 direct
     if proof is None and strategy != "direct":
         print(f"  [{strategy} 失败，尝试 direct...]")
