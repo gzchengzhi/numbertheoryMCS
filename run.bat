@@ -22,6 +22,6 @@ git commit -m "Initial release: numbertheoryMCS v0.1
 - Web 界面（Flask）"
 
 REM 4. 推到 GitHub
-git remote add origin git@github.com:<你的用户名>/numbertheoryMCS.git
+git remote add origin git@github.com:gzchengzhi/numbertheoryMCS.git
 git branch -M main
 git push -u origin main
