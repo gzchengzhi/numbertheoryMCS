@@ -5,6 +5,11 @@
 import math
 from typing import Any, Optional
 from functools import lru_cache
+import sympy as sp
+
+def _type_name(term) -> str:
+    """返回对象的类名，对 reload 免疫。"""
+    return type(term).__name__
 
 
 # ============================================================
@@ -19,25 +24,26 @@ def evaluate(term, env: dict = None) -> Any:
       - 表达式对象 Const('plus', (a, b))
       - 变量 Var（查 env）
     """
-    from numtheory_prover import Var, Const
+    tname = _type_name(term)
 
-    if isinstance(term, Var):
+    if tname == 'Var':
         if env and term.name in env:
             return evaluate(env[term.name], env)
         raise ValueError(f"未绑定变量: {term.name}")
 
-    if isinstance(term, Const):
+    if tname == 'Const':
+        # ---- sum 特殊处理 ----
+        if term.name == "sum" and len(term.args) == 4:
+            return _evaluate_sum(term, env)
+
         if not term.args:
-            # 常量：尝试转成 int
             try:
                 return int(term.name)
             except ValueError:
                 return term.name
-        # 递归求值参数
         args = [evaluate(a, env) for a in term.args]
         return apply_function(term.name, args)
 
-    # 字符串/数字
     if isinstance(term, (int, float)):
         return term
     if isinstance(term, str):
@@ -47,6 +53,31 @@ def evaluate(term, env: dict = None) -> Any:
             return term
 
     raise ValueError(f"无法求值: {term}")
+    
+def _evaluate_sum(term, env):
+    """
+    求值 sum(i, lower, upper, body)。
+    对 i 从 lower 到 upper，累加 body。
+    """
+    from numtheory_prover import Const
+
+    var = term.args[0]       # Var("i")
+    lower = term.args[1]
+    upper = term.args[2]
+    body = term.args[3]
+
+    lo = evaluate(lower, env)
+    up = evaluate(upper, env)
+
+    if not isinstance(lo, int) or not isinstance(up, int):
+        raise ValueError(f"sum 的上下界必须是整数: {lo}, {up}")
+
+    total = 0
+    for i_val in range(lo, up + 1):
+        env2 = dict(env) if env else {}
+        env2[var.name] = Const(str(i_val))
+        total += evaluate(body, env2)
+    return total
 
 
 def apply_function(name: str, args: list) -> Any:
@@ -58,7 +89,11 @@ def apply_function(name: str, args: list) -> Any:
     if name == "times":
         return args[0] * args[1]
     if name == "div":
-        return args[0] // args[1]
+        if args[1] == 0:
+            raise ValueError("除以零")
+        if args[0] % args[1] == 0:
+            return args[0] // args[1]
+        return sp.Rational(args[0], args[1])
     if name == "mod":
         return args[0] % args[1]
     if name == "power":
@@ -79,6 +114,12 @@ def apply_function(name: str, args: list) -> Any:
         return math.factorial(args[0])
     if name == "sqrt":
         return math.isqrt(args[0]) if args[0] >= 0 else None
+    if name == "prime_factorization":
+        from symbolic import prime_factorization
+        return prime_factorization(args[0])
+    if name == "prime_power":
+        from symbolic import prime_power_in
+        return prime_power_in(args[0], args[1])
     raise ValueError(f"未知函数: {name}")
 
 
@@ -142,6 +183,15 @@ def divisor_sum(n: int) -> int:
                 total += n // i
     return total
 
+def _is_integer_value(v):
+    if isinstance(v, int):
+        return True
+    if hasattr(v, 'is_integer'):
+        return bool(v.is_integer)
+    if hasattr(v, 'q') and hasattr(v, 'p'):
+        return v.q == 1
+    return False
+
 
 # ============================================================
 # 谓词求值（核心接口）
@@ -152,28 +202,103 @@ def evaluate_predicate(pred) -> Optional[bool]:
     尝试计算一个谓词的真值。
     返回 True / False / None（无法计算）
     """
-    from numtheory_prover import Var, Const, Pred
+    tname = _type_name(pred)
 
-    # 检查是否所有参数都是具体值（无自由变量）
+    if tname not in ('Pred', 'Const'):
+        return None
+
+    name = pred.name
+
+    # ---- and ----
+    if name == "and":
+        for a in pred.args:
+            r = evaluate_predicate(a)
+            if r is False:
+                return False
+            if r is None:
+                return None
+        return True
+
+    # ---- or ----
+    if name == "or":
+        has_none = False
+        for a in pred.args:
+            r = evaluate_predicate(a)
+            if r is True:
+                return True
+            if r is None:
+                has_none = True
+        return None if has_none else False
+
+    # ---- integer / not_integer（必须在 has_var 之前）----
+    if name in ("integer", "not_integer"):
+        try:
+            args = [evaluate(a) for a in pred.args]
+        except Exception:
+            return None
+        if name == "integer":
+            return _is_integer_value(args[0])
+        return not _is_integer_value(args[0])
+
+    # ---- 已知谓词 ----
+    KNOWN_PREDICATES = {
+        "divides", "equals", "gt", "lt", "ge", "le", "ne",
+        "prime", "composite", "coprime", "congruent",
+        "nonzero", "even", "odd", "square", "perfect",
+        "integer", "not_integer",
+        "prime_power", "prime_power_in_factorial",
+        "has_prime_factor", "not_divides",
+    }   
+    if name not in KNOWN_PREDICATES:
+        return None
+    
+
+
+    # ---- has_var 检查 ----
     def has_var(t):
-        if isinstance(t, Var):
+        tn = _type_name(t)
+        if tn == 'Var':
             return True
-        if isinstance(t, Const):
+        if tn in ('Const', 'Pred'):
             return any(has_var(a) for a in t.args)
         return False
 
     for a in pred.args:
         if has_var(a):
-            return None  # 有变量，交给逻辑层
+            return None
 
-    name = pred.name
-
+    # ---- 求值 ----
     try:
         args = [evaluate(a) for a in pred.args]
     except Exception:
         return None
 
-    # 具体数值求值
+    # ---- 具体数值求值 ----
+    
+    # ---- prime_power ----
+    if name == "prime_power":
+        n, p, e = args
+        from symbolic import prime_power_in
+        return prime_power_in(n, p) == e
+    
+    # ---- prime_power_in_factorial ----
+    if name == "prime_power_in_factorial":
+        n, p, e = args
+        from symbolic import prime_power_in_factorial
+        return prime_power_in_factorial(p, n) == e
+    
+    # ---- has_prime_factor ----
+    if name == "has_prime_factor":
+        n, p = args
+        from symbolic import prime_power_in
+        return prime_power_in(n, p) > 0
+    
+    if name == "not_divides":
+        a, b = args
+        if a == 0:
+            return b != 0
+        return b % a != 0
+    
     if name == "divides":
         a, b = args
         if a == 0:

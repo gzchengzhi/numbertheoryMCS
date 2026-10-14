@@ -1,0 +1,11 @@
+{"id":"SUM-MOD-001","name":"T_n含p因子","category":"求和","head":"divides(p,sum(i,1,n,div(factorial(n),factorial(i))))","body":["prime(p)","gt(p,div(n,2))","le(p,n)"],"keywords":["求和","模"]}
+{"id":"SUM-MOD-002","name":"n!里p的幂次为1","category":"求和","head":"prime_power_in_factorial(n,p,1)","body":["prime(p)","gt(p,div(n,2))","le(p,n)"],"keywords":["求和","模"]}
+
+{"id":"SUM-INT-001","name":"n!不整除T_n","category":"求和", "head":"not_divides(factorial(n),sum(i,1,n,div(factorial(n),factorial(i))))", "body":["ge(n,4)",         "prime_power_in_factorial(n,SKOLEM_p(n),1)", "divides(SKOLEM_p(n),sum(i,1,n,div(factorial(n),factorial(i))))"], "keywords":["求和","模"]}
+
+{"id":"SUM-INT-002","name":"Σ1/i!不是整数","category":"求和","head":"not_integer(sum(i,1,n,div(1,factorial(i))))","body":["not_divides(factorial(n),sum(i,1,n,div(factorial(n),factorial(i))))"],"keywords":["求和","题目2"]}
+
+{"id":"BERT-002","name":"伯特兰公设-存在p∈(n,2n)","category":"素数","head":"exists(p,and(prime(p),and(gt(p,n),lt(p,times(2,n)))))","body":["ge(n,2)"],"keywords":["伯特兰"]}
+{"id":"BERT-003a","name":"Bertrand: prime(SKOLEM_p(n))","category":"素数", "head":"prime(SKOLEM_p(n))","body":["ge(n,2)"],"keywords":["伯特兰"]}
+{"id":"BERT-003b","name":"Bertrand: SKOLEM_p(n)>n/2","category":"素数", "head":"gt(SKOLEM_p(n),div(n,2))","body":["ge(n,2)"],"keywords":["伯特兰"]}
+{"id":"BERT-003c","name":"Bertrand: SKOLEM_p(n)<=n","category":"素数", "head":"le(SKOLEM_p(n),n)","body":["ge(n,2)"],"keywords":["伯特兰"]}

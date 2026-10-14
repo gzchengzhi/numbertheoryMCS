@@ -1,0 +1,7 @@
+{"id":"INT-001","name":"区间传递-上界","category":"区间","head":"lt(p,m)","body":["lt(p,k)","le(k,m)"],"keywords":["区间","传递","上界"]}
+{"id":"INT-002","name":"区间传递-下界","category":"区间","head":"gt(p,n)","body":["gt(p,k)","ge(k,n)"],"keywords":["区间","传递","下界"]}
+{"id":"INT-004","name":"区间扩展","category":"区间", "head":"exists(p,and(prime(p),and(gt(p,n),lt(p,m))))", "body":["exists(p,and(prime(p),and(gt(p,n),lt(p,times(2,n)))))","lt(times(2,n),m)"], "keywords":["区间","传递"]}
+{"id":"FACT-001","name":"阶乘大于n","category":"阶乘","head":"gt(factorial(n),n)","body":["ge(n,2)"],"keywords":["阶乘","不等式"]}
+{"id":"FACT-002","name":"2n小于n阶乘","category":"阶乘","head":"lt(times(2,n),factorial(n))","body":["ge(n,4)"],"keywords":["阶乘","不等式"]}
+{"id":"GE-001","name":"n≥4推出n≥2","category":"不等式","head":"ge(n,2)","body":["ge(n,4)"],"keywords":["不等式"]}
+{"id":"LE-001","name":"le(n,10) :- le(n,5)","category":"不等式","head":"le(n,10)","body":["le(n,5)"],"keywords":["不等式"]}

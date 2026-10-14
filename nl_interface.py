@@ -26,7 +26,36 @@ PARSE_PROMPT = """把中文数学问题转成 JSON。
 prime(p), composite(n), even(n), odd(n), divides(a,b), coprime(a,b),
 congruent(a,b,m), equals(a,b), irrational(x), quadratic_residue(a,p),
 legendre_symbol(a,p), primitive_root(g,n), pythagorean(a,b,c),
-sum_to_n(n,S), prime_infinite, exists(x,P(x)), and(P1,P2), or(P1,P2)
+sum_to_n(n,S), prime_infinite, exists(x,P(x)), and(P1,P2), or(P1,P2),
+integer(x), factorial(n), binomial(n,k), product_range(m,n)
+
+【谓词参数顺序】（严格遵循，不要反）
+- divides(a, b)：a 整除 b。a 是除数，b 是被除数。
+  正确：3 整除 6 → divides(3, 6)
+  正确：n! 整除 X → divides(factorial(n), X)
+  错误：divides(X, factorial(n))   ← 反了！
+- congruent(a, b, m)：a ≡ b (mod m)
+  正确：7 ≡ 2 (mod 5) → congruent(7, 2, 5)
+- equals(a, b)：a = b（对称，无所谓顺序）
+- minus(a, b)：a - b（注意是 a 减 b）
+- div(a, b)：a / b（a 是被除数，b 是除数）
+
+【数学函数规范】（严格遵守）
+- 平方根：统一写 sqrt(x)
+  ✓ sqrt(5)
+  ✗ power(5, div(1, 2))
+  ✗ 5^(1/2)
+- 幂：写 power(x, n)
+- 不要使用 not(...) 谓词 —— 系统不支持否定
+- 无理数只用 irrational(x)，不要展开定义
+- 有理数只用 rational(x)，不要展开定义
+- 互质只用 coprime(a, b)，不要展开定义
+- 整除只用 divides(a, b)，不要展开定义
+
+【重要约束】
+- 如果目标命题需要"新定理"，新定理里**只能用**上面【谓词】段列出的谓词
+- 不允许发明新谓词（如 not、rational、coprime 等，除非在【谓词】段里已有）
+- 新定理的 body 里**不允许**出现 not(...)
 
 【函数】
 sqrt(x), power(a,n), plus(a,b), minus(a,b), times(a,b), gcd(a,b), phi(n), tau(n)
@@ -34,24 +63,55 @@ sqrt(x), power(a,n), plus(a,b), minus(a,b), times(a,b), gcd(a,b), phi(n), tau(n)
 【策略】
 direct=默认, contradiction=无穷多/不存在, induction=对所有n
 
-【示例】
-输入：证明任意奇数可以表示为两个偶数之和加1
-输出：{"goal":"exists(ab,and(even(a),and(even(b),equals(plus(plus(a,b),1),n))))","strategy":"direct","var":null,"premises":["odd(n)"],"explanation":"奇数=两偶数之和加1"}
+【new_theorems 字段说明】
+如果目标命题需要"人类已证的中间定理"才能证出，
+把这些中间定理放进 new_theorems 数组。
+每条定理的格式必须是：
+{
+  "id": "T_XXX",           ← 唯一 id，如 T_PROD_RANGE_EQ
+  "name": "中文名",
+  "head": "谓词(...)",     ← 结论
+  "body": ["谓词1(...)", "谓词2(...)"],  ← 前提（空数组=公理）
+  "category": "分类"
+}
 
-输入：证明根号2是无理数
-输出：{"goal":"irrational(sqrt(2))","strategy":"direct","var":null,"premises":[],"explanation":"证明√2无理"}
+如果目标能直接用已有定理证明，new_theorems 写 []。
 
+【输出格式】
+{
+  "goal": "<目标谓词>",
+  "strategy": "direct|contradiction|induction",
+  "var": null,
+  "premises": [],
+  "explanation": "<一句话说明>",
+  "new_theorems": []
+}
+
+【示例 1】
 输入：证明素数无穷多
-输出：{"goal":"prime_infinite","strategy":"contradiction","var":null,"premises":[],"explanation":"素数无穷多"}
+输出：{"goal":"prime_infinite","strategy":"contradiction","var":null,"premises":[],"explanation":"素数无穷多","new_theorems":[]}
 
-输入：证明任意偶数可以表示为两个奇数之和
-输出：{"goal":"exists(ab,and(odd(a),and(odd(b),equals(plus(a,b),n))))","strategy":"direct","var":null,"premises":["even(n)"],"explanation":"偶数=两奇数之和"}
+【示例 2】
+输入：连续 n 个正整数乘积能被 n! 整除
+输出：{
+  "goal": "divides(factorial(n), product_range(m, n))",
+  "strategy": "direct",
+  "var": null,
+  "premises": [],
+  "explanation": "连续乘积 = n! · C(m+n-1, n)",
+  "new_theorems": [
+    {"id":"T_BINOM_INT","name":"组合数整性","head":"integer(binomial(n, k))","body":[],"category":"组合数"},
+    {"id":"T_PROD_RANGE_EQ","name":"连续乘积公式","head":"equals(product_range(m, n), times(factorial(n), binomial(plus(m, minus(n, 1)), n)))","body":[],"category":"组合数"},
+    {"id":"T_MUL_DIVIDES","name":"整数乘积整除性","head":"divides(a, times(a, c))","body":["integer(a)","integer(c)"],"category":"基础"},
+    {"id":"T_FACT_INT","name":"阶乘整性","head":"integer(factorial(n))","body":[],"category":"基础"},
+    {"id":"T_EQUAL_SUBST","name":"等量代换","head":"divides(a, c)","body":["equals(c, times(a, d))","divides(a, times(a, d))"],"category":"基础"}
+  ]
+}
 
-【输出格式约束】
-- exists 的格式是 exists(变量名, 谓词)，例如 exists(ab, and(...))
-- and 的格式是 and(谓词1, 谓词2)
-- 不要引入多余的变量
-- 严格参照示例的格式
+【约束】
+- exists 格式：exists(变量名, 谓词)
+- and 格式：and(谓词1, 谓词2)
+- 只输出 JSON，不要其他内容
 
 输入：{query}
 输出："""
@@ -158,8 +218,8 @@ RULES = [
                                    "explanation": f"证明 {m.group(1)} 是素数"}),
     # 素数无穷多
     (r'素数.*无穷|无穷.*素数', lambda m: {"goal": "prime_infinite",
-                                          "strategy": "contradiction",
-                                          "explanation": "证明素数无穷多"}),
+                                      "strategy": "direct",   # ★ 改 direct
+                                      "explanation": "证明素数无穷多"}),
     # 同余
     (r'(\d+).*同余.*(\d+).*模\s*(\d+)',
      lambda m: {"goal": f"congruent({m.group(1)}, {m.group(2)}, {m.group(3)})",

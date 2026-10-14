@@ -1,0 +1,1 @@
+{"id":"F-002","name":"合数判定","category":"合数","head":"not_prime(times(a,b))","body":["gt(a,1)","gt(b,1)"],"keywords":["合数","因子"]}

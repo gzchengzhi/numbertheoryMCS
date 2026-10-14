@@ -29,6 +29,7 @@
 {"id": "T011", "name": "同余定义", "category": "同余", "head": "congruent(a,b,m)", "body": ["divides(m,minus(a,b))"], "keywords": ["congruent", "divides", "同余", "同余定义"]}
 {"id": "T014", "name": "欧几里得算法", "category": "gcd", "head": "equals(gcd(a,b),gcd(b,mod(a,b)))", "body": ["nonzero(b)"], "keywords": ["equals", "gcd", "nonzero", "欧几里得", "算法"]}
 {"id": "T018", "name": "素数平方根无理性", "category": "无理数", "head": "irrational(sqrt(p))", "body": ["prime(p)"], "keywords": ["irrational", "prime", "无理数", "根无理性", "素数平方"]}
+{"id": "T018_POW", "name": "无理数(power)", "head": "irrational(power(p, div(1, 2)))", "body": ["prime(p)"], "category": "无理数"}
 {"id": "T019", "name": "sqrt(2)无理性", "category": "无理数", "head": "irrational(sqrt(2))", "body": ["prime(2)"], "keywords": ["irrational", "prime", "无理性", "无理数"]}
 {"id": "T033", "name": "整除与负数", "category": "整除", "head": "divides(a,minus(0,b))", "body": ["divides(a,b)"], "keywords": ["divides", "整除", "整除与负"]}
 {"id": "T037", "name": "互质的定义", "category": "gcd", "head": "equals(gcd(a,b),1)", "body": ["coprime(a,b)"], "keywords": ["coprime", "equals", "gcd", "互质的定"]}
