@@ -61,6 +61,41 @@ def _clause_signature(clause) -> tuple:
         tuple(pred_sig(b) for b in clause.body),
     )
 
+# ========== 10.0 新增：head 解析 ==========
+
+def parse_head(head_str):
+    """解析字符串形式的 head，如 'divides(a, c)' -> ('divides', ('a', 'c'))"""
+    if "(" not in head_str:
+        return (head_str.strip(), ())
+    pred, rest = head_str.split("(", 1)
+    rest = rest.rstrip(")")
+    return (pred.strip(), tuple(split_args(rest)))
+
+def split_args(s):
+    """按逗号分割，忽略括号内的逗号"""
+    args, depth, cur = [], 0, ""
+    for ch in s:
+        if ch == "," and depth == 0:
+            args.append(cur.strip())
+            cur = ""
+        else:
+            if ch in "([":
+                depth += 1
+            elif ch in ")]":
+                depth -= 1
+            cur += ch
+    if cur.strip():
+        args.append(cur.strip())
+    return args
+
+def _parse_clause_obj(clause):
+    """从 HornClause 对象提取 (pred_name, terms) 用于分类"""
+    if clause is None or not hasattr(clause, 'head'):
+        return ("", ())
+    head = clause.head
+    return (head.name, tuple(getattr(a, 'name', str(a)) for a in head.args))
+
+
 
 class AdaptiveStore(TheoremStore):
 
@@ -77,6 +112,170 @@ class AdaptiveStore(TheoremStore):
         self.theorem_weights: Dict[str, float] = {}
         self.usage_stats: Dict[str, Dict[str, int]] = defaultdict(
             lambda: {"used": 0, "success": 0, "fail": 0})
+        self._virtual_theorems = []
+        self._sympy_decl_cache = None
+        self._ensure_all_decls()
+        self.concept_neurons: Dict[str, Dict] = {}
+        self.neuron_edges: Dict[Tuple[str, str], float] = {}
+        self._neurons_built = False
+        
+        # ========== 10.0 新增：type 附加 + 虚拟定理 ==========
+        
+    # ============================================================
+    # 10.0 概念神经元层
+    # ============================================================
+    def add_triangle(self, triangle: Dict, source_clause_id: str):
+        """
+        把一个三角形加进神经元网络。
+        triangle: extract_triangles 返回的 triangles 列表中的一项
+        source_clause_id: 这个三角形来自哪条定理（用于追溯）
+        """
+        nid = triangle['neuron']
+        if nid not in self.concept_neurons:
+            self.concept_neurons[nid] = {
+                'neuron_id': nid,
+                'type': triangle['type'],
+                'lower': triangle['lower'],
+                'mediator': triangle.get('mediator'),
+                'anchor': triangle.get('anchor'),
+                'head_pattern': triangle.get('head_pattern'),  # ← 新增
+                'N': triangle['N'],
+                'weight': triangle['weight'],
+                'instances': [],
+            }
+        # 记录实例
+        self.concept_neurons[nid]['instances'].append({
+            'source_clause': source_clause_id,
+            'lower': triangle['lower'],
+            'mediator': triangle.get('mediator'),
+            'anchor': triangle.get('anchor'),
+            'N': triangle['N'],
+        })
+        # 记录边（神经元 → 神经元，如果 lower 里有神经元）
+        for low in triangle['lower']:
+            if isinstance(low, str) and low.startswith('NEURON::'):
+                key = (low, nid)
+                self.neuron_edges[key] = max(
+                    self.neuron_edges.get(key, 0.0),
+                    triangle['weight'],
+                )
+
+    def build_neurons_from_theorems(self, extract_fn):
+        """
+        从定理库批量构建神经元层。
+        extract_fn: callable(clause, to_sympy, store) -> extract_triangles 的结果
+        """
+        from sympy_bridge import to_sympy
+        for c in self.clauses:
+            if getattr(c, 'type', None) != 'logic':
+                continue
+            r = extract_fn(c, to_sympy, self)
+            for tri in r['triangles']:
+                self.add_triangle(tri, c.id)
+        self._neurons_built = True
+
+    def activate_neuron(self, body_patterns: List[str],
+                        neuron_type: Optional[str] = None
+                        ) -> List[Tuple[str, float, str, int]]:
+        """
+        给定一组 body 谓词名，看能否激活某个神经元。
+        返回: [(neuron_id, weight, type, N), ...]
+              先按 weight 降序，再按 N 升序（N 小的优先）
+        """
+        activated = []
+        for nid, n in self.concept_neurons.items():
+            if neuron_type and n['type'] != neuron_type:
+                continue
+            lowers = n.get('lower', [])
+            if len(lowers) != len(body_patterns):
+                continue
+            low_preds = []
+            for low in lowers:
+                if isinstance(low, tuple):
+                    low_preds.append(low[0])
+                elif isinstance(low, str) and low.startswith('NEURON::'):
+                    low_preds.append(low)
+            if sorted(low_preds) == sorted(body_patterns):
+                activated.append((nid, n['weight'], n['type'], n['N']))
+        activated.sort(key=lambda x: (-x[1], x[3]))
+        return activated
+    
+    def save_neurons(self, path: str = "theorems/concept_neurons.json"):
+        import json
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        data = {
+            'concept_neurons': dict(self.concept_neurons),
+            'neuron_edges': {
+                f"{a}|{b}": w for (a, b), w in self.neuron_edges.items()
+            },
+        }
+        with open(path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+
+    def load_neurons(self, path: str = "theorems/concept_neurons.json"):
+        import json
+        if not os.path.exists(path):
+            return
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+        except (json.JSONDecodeError, OSError):
+            return
+        self.concept_neurons = data.get('concept_neurons', {})
+        self.neuron_edges = {}
+        for key, w in data.get('neuron_edges', {}).items():
+            parts = key.split("|")
+            if len(parts) == 2:
+                self.neuron_edges[(parts[0], parts[1])] = w
+        self._neurons_built = True
+
+    def _classify(self, head_name, body_names):
+        from sympy_decls import SYMPY_DECLS
+        sympy_preds = set(SYMPY_DECLS.keys())
+        body_preds = set(body_names)
+
+        if not body_preds:
+            if head_name in sympy_preds:
+                return "compute"
+            return "fact"
+
+        return "logic"
+
+    def _enrich_theorem(self, clause):
+        """只附加 type 属性，幂等。"""
+        if hasattr(clause, 'type') and clause.type:
+            return
+        pred_name = clause.head.name
+        body_names = []
+        for b in clause.body:
+            if hasattr(b, 'name'):
+                body_names.append(b.name)
+            else:
+                body_names.append(str(b))
+        clause.type = self._classify(pred_name, body_names)
+
+    def _ensure_all_decls(self):
+        """为 SYMPY_DECLS 里所有谓词构造虚拟定理。"""
+        from sympy_decls import SYMPY_DECLS
+        self._virtual_theorems = []
+        for pred, decl in SYMPY_DECLS.items():
+            self._virtual_theorems.append({
+                "id": f"T_SYMPY_DECL_{pred}",
+                "predicate": pred,
+                "sympy": decl,
+                "_virtual": True,
+            })
+
+    def find_sympy_decls(self, predicate):
+        """从虚拟定理里查 sympy 声明。"""
+        if self._sympy_decl_cache is None:
+            self._sympy_decl_cache = {}
+            for thm in self._virtual_theorems:
+                decl = thm.get("sympy")
+                if decl:
+                    pred = decl.get("predicate")
+                    self._sympy_decl_cache.setdefault(pred, []).append(decl)
+        return self._sympy_decl_cache.get(predicate, [])
 
     # ============================================================
     # 全互联 + 结构去重
@@ -98,6 +297,9 @@ class AdaptiveStore(TheoremStore):
 
         self._signature_index[sig] = cid
         super().add(clause)
+        self._signature_index[sig] = cid
+        super().add(clause)
+        self._enrich_theorem(clause)   # 10.0 新增：附加 type
 
         if cid.startswith("PREM_"):
             self.theorem_weights[cid] = 1.0
@@ -116,6 +318,27 @@ class AdaptiveStore(TheoremStore):
     def mark_learned(self, ids: List[str]):
         """标记本次学习加入的定理，用于检索加成"""
         self._learned_ids = set(ids)
+        
+        # 10.0 新增：处理新定理自带的 sympy 声明
+        updated = False
+        for tid in ids:
+            clause = self.by_id.get(tid)
+            if clause and hasattr(clause, 'sympy_decl') and clause.sympy_decl:
+                pred = clause.sympy_decl.get("predicate")
+                self._virtual_theorems = [
+                    v for v in self._virtual_theorems
+                    if v.get("predicate") != pred
+                ]
+                self._virtual_theorems.append({
+                    "id": f"T_SYMPY_DECL_{pred}_learned",
+                    "predicate": pred,
+                    "sympy": clause.sympy_decl,
+                    "_virtual": True,
+                })
+                updated = True
+        
+        if updated:
+            self._sympy_decl_cache = None
 
     def ensure_slot(self, name: str):
         if name not in self.theorem_weights:

@@ -61,6 +61,34 @@ def load_all_theorems():
     STORE.load_weights()
     STORE.load_dependency_records()
 
+def save_neurons(self, path: str = "theorems/concept_neurons.json"):
+    import json
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    data = {
+        'concept_neurons': dict(self.concept_neurons),
+        'neuron_edges': {
+            f"{a}|{b}": w for (a, b), w in self.neuron_edges.items()
+        },
+    }
+    with open(path, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+def load_neurons(self, path: str = "theorems/concept_neurons.json"):
+    import json
+    if not os.path.exists(path):
+        return
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return
+    self.concept_neurons = data.get('concept_neurons', {})
+    self.neuron_edges = {}
+    for key, w in data.get('neuron_edges', {}).items():
+        parts = key.split("|")
+        if len(parts) == 2:
+            self.neuron_edges[(parts[0], parts[1])] = w
+    self._neurons_built = True
 
 print("=" * 60)
 print("数论定理证明器 · Web 界面")
@@ -68,17 +96,68 @@ print("=" * 60)
 print("[1] 加载定理...")
 load_all_theorems()
 print(f"  加载 {len(STORE.clauses)} 条定理")
+
+print("[2] 构建概念神经元...")
+from concept_triangle import extract_triangles
+try:
+    STORE.load_neurons()    # 先尝试从文件加载
+    if not STORE.concept_neurons:
+        STORE.build_neurons_from_theorems(extract_triangles)
+        STORE.save_neurons()
+    print(f"  {len(STORE.concept_neurons)} 个神经元，{len(STORE.neuron_edges)} 条边")
+except Exception as e:
+    print(f"  [警告] 构建神经元失败: {e}")
 print("=" * 60)
 
 
 # ============================================================
 # 路由
 # ============================================================
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
 
+@app.route('/api/neurons')
+def api_neurons():
+    """返回所有概念神经元，按实例数降序"""
+    result = []
+    for nid, n in STORE.concept_neurons.items():
+        result.append({
+            "neuron_id": nid,
+            "type": n["type"],
+            "N": n["N"],
+            "weight": n["weight"],
+            "instance_count": len(n["instances"]),
+            "mediator": n.get("mediator"),
+            "anchor": n.get("anchor"),
+            # 实例样本（前 3 个）
+            "samples": [
+                {
+                    "source_clause": inst.get("source_clause"),
+                    "lower": [str(x) for x in inst.get("lower", [])],
+                    "mediator": inst.get("mediator"),
+                    "anchor": inst.get("anchor"),
+                }
+                for inst in n["instances"][:3]
+            ],
+        })
+    result.sort(key=lambda x: -x["instance_count"])
+    return jsonify(result)
 
+
+@app.route('/api/neuron_stats')
+def api_neuron_stats():
+    """神经元统计"""
+    from collections import Counter
+    types = Counter(n["type"] for n in STORE.concept_neurons.values())
+    return jsonify({
+        "total": len(STORE.concept_neurons),
+        "edges": len(STORE.neuron_edges),
+        "by_type": dict(types),
+        "total_instances": sum(len(n["instances"]) for n in STORE.concept_neurons.values()),
+    })
 
 @app.route('/api/theorems')
 def api_theorems():
@@ -110,7 +189,7 @@ def proof_to_dict(proof):
             "body": body_strs,
             "head": head_str,
             "depth": step.depth,
-            "strategy": step.strategy,
+            "strategy": step.strategy,        # ★ 保证有
         })
     return result
 
@@ -138,21 +217,26 @@ def api_prove():
     try:
         ap = AdaptiveProver(STORE)
         # ★ 先试 direct（最短路径优先）
-        proof = ap.prove(goal_str, strategy='direct', var=var,
+        proof = ap.prove(goal_str, strategy=strategy, var=var,
                          premises=premises_strs, verbose=False)
         # 失败再试用户指定策略
         if proof is None and strategy != 'direct':
             proof = ap.prove(goal_str, strategy=strategy, var=var,
                              premises=premises_strs, verbose=False)
         # 还失败，试其他策略
+        # 还失败，试其他策略
         if proof is None:
             for alt in ['auto', 'contradiction', 'induction']:
                 if alt in (strategy, 'direct'):
+                    continue
+                # ★ 新增：如果没有 var，跳过 induction
+                if alt == 'induction' and var is None:
                     continue
                 proof = ap.prove(goal_str, strategy=alt, var=var,
                                  premises=premises_strs, verbose=False)
                 if proof is not None:
                     break
+                
     except Exception as e:
         return jsonify({"success": False, "error": f"证明出错: {str(e)}"})
 
@@ -166,11 +250,20 @@ def api_prove():
     STORE.save_weights()
     STORE.save_dependency_records()
 
+    # ★ 识别整体证明路径
+    via = 'chain'
+    if proof:
+        if any(s.strategy.startswith('neuron:') for s in proof):
+            via = 'neuron'
+        elif any(s.strategy == 'sympy' for s in proof):
+            via = 'sympy'
+
     return jsonify({
         "success": True,
         "goal": str(goal),
         "proof": proof_to_dict(proof),
         "strategy": strategy,
+        "via": via,                 # ★ 新增
     })
 
 
@@ -250,6 +343,28 @@ def _persist_learned(new_theorems, proof):
 # ============================================================
 # 自然语言接口
 # ============================================================
+def _try_sympy_shortcut(goal):
+    """
+    计算层优先：尝试直接通过 sympy 证明目标。
+    成功返回 ProofStep 列表，失败返回 None。
+    """
+    from adaptive_prover import AdaptiveProver
+    from numtheory_prover import ProofStep, HornClause
+    
+    ap = AdaptiveProver(STORE)
+    if ap._try_sympy(goal):
+        print(f"[sympy] 直接计算成功: {goal} (自然语言接口终极拦截)")
+        step = ProofStep(
+            clause=HornClause("SYMPY", "sympy 计算", goal, [], category="计算"),
+            substitution={},
+            subgoal=goal,
+            depth=0,
+            strategy="sympy",
+        )
+        return [step]
+    return None
+
+
 @app.route('/api/nl_prove', methods=['POST'])
 def api_nl_prove():
     """自然语言接口"""
@@ -275,20 +390,53 @@ def api_nl_prove():
         })
 
     goal_str = parsed.get('goal')
-    strategy = parsed.get('strategy', 'direct')
     var_name = parsed.get('var')
     premises_strs = parsed.get('premises', [])
     new_theorems = parsed.get('new_theorems', [])
+    # 强制放弃 LLM 的 strategy，完全交给系统内部判断
+    strategy = 'auto'
 
     if not goal_str:
         return jsonify({"success": False, "error": "解析结果缺少 goal"})
 
+    goal = parse_goal(goal_str)
+    if goal is None:
+        return jsonify({"success": False, "error": f"无法解析目标: {goal_str}"})
+
+    # ============================================================
+    # ★ 终极拦截：在吸收任何新定理、执行任何复杂逻辑之前，先试 Sympy 计算。
+    # 这符合"计算层优先/能量最低消耗"原则。
+    # ============================================================
+    sympy_proof = _try_sympy_shortcut(goal)
+    if sympy_proof is not None:
+        return jsonify({
+            "success": True,
+            "query": query,
+            "parsed": parsed,
+            "goal": str(goal),
+            "strategy": "sympy",
+            "learned": [],
+            "proof": proof_to_dict(sympy_proof),
+            "via": "sympy",
+        })
+
+    # ============================================================
+    # 下面是原有的逻辑吸收、证明、持久化、回滚流程
+    # ============================================================
+    
     # 2. 吸收新定理（只记录"真正新加入的"用于回滚）
-    marked_ids = []      # 用于 mark_learned（包括已存在的）
-    newly_added = []     # 只包括"本次新加入的"，用于失败回滚
+    marked_ids = []
+    newly_added = []
 
     for t in new_theorems:
         try:
+            # 过滤掉 LLM 生成的“定义类”定理，防止污染库
+            name = t.get('name', '')
+            tid = t.get('id', '')
+            if '定义' in name or '_DEF' in tid:
+                print(f"[learn] 跳过无用定义: {tid}")
+                continue
+
             head = parse_goal(t['head'])
             if head is None:
                 continue
@@ -318,19 +466,14 @@ def api_nl_prove():
         print(f"[learn] 标记 {len(marked_ids)} 条（其中新增 {len(newly_added)} 条）")
 
     # 3. 证明
-    goal = parse_goal(goal_str)
-    if goal is None:
-        _rollback_learned(STORE, newly_added)
-        return jsonify({"success": False, "error": f"无法解析目标: {goal_str}"})
-
     var = Var(var_name) if var_name else None
 
     try:
         ap = AdaptiveProver(STORE)
-        # ★ 先试 direct（最短路径优先）
+        # 先试 direct（最短路径优先）
         proof = ap.prove(goal_str, strategy='direct', var=var,
                          premises=premises_strs, verbose=False)
-        # 失败再试用户指定策略
+        # 失败再试用户指定策略（如果有）
         if proof is None and strategy != 'direct':
             proof = ap.prove(goal_str, strategy=strategy, var=var,
                              premises=premises_strs, verbose=False)
@@ -338,6 +481,9 @@ def api_nl_prove():
         if proof is None:
             for alt in ['auto', 'contradiction', 'induction']:
                 if alt in (strategy, 'direct'):
+                    continue
+                # 如果没有 var，跳过 induction
+                if alt == 'induction' and var is None:
                     continue
                 proof = ap.prove(goal_str, strategy=alt, var=var,
                                  premises=premises_strs, verbose=False)
@@ -364,15 +510,39 @@ def api_nl_prove():
     STORE.save_weights()
     STORE.save_dependency_records()
 
+    # 识别整体证明路径
+    via = 'chain'
+    if proof:
+        if any(s.strategy.startswith('neuron:') for s in proof):
+            via = 'neuron'
+        elif any(s.strategy == 'sympy' for s in proof):
+            via = 'sympy'
+
     return jsonify({
         "success": True,
         "query": query,
         "parsed": parsed,
         "goal": str(goal),
         "strategy": strategy,
-        "learned": newly_added,   # 只报告"本次新加入的"
+        "learned": newly_added,
         "proof": proof_to_dict(proof),
+        "via": via,
     })
+
+# @app.route('/api/neurons')
+# def api_neurons():
+#     result = []
+#     for nid, n in STORE.concept_neurons.items():
+#         result.append({
+#             'neuron_id': nid,
+#             'type': n['type'],
+#             'N': n['N'],
+#             'weight': n['weight'],
+#             'instance_count': len(n['instances']),
+#             'mediator': n.get('mediator'),
+#             'anchor': n.get('anchor'),
+#         })
+#     return jsonify(result)
 
 
 # ============================================================

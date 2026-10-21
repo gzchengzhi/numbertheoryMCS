@@ -1,14 +1,19 @@
+# Python 缓存
 __pycache__/
-*.pyc
-*.pyo
-.env
+*.py[cod]
+*$py.class
+
+# 运行时生成的数据
 theorem_weights.json
 dependency_records.json
-training_history.json
-debug.txt
-out_*.txt
-*.log
-.venv/
+theorems/learned.jsonl
+theorems/auto_lemmas.jsonl
+
+# 虚拟环境
 venv/
-.idea/
+env/
+
+# 编辑器配置
 .vscode/
+.idea/
+.DS_Store

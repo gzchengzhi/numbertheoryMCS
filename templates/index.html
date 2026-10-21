@@ -12,6 +12,13 @@
             <p class="subtitle">基于 SLD 归结 + 反向搜索 · 零依赖 · 可解释</p>
         </header>
 
+<button class="tab-btn" data-tab="neurons">概念神经元</button>
+<div class="tab-panel" id="tab-neurons" style="display:none;">
+    <h2>概念神经元网络</h2>
+    <div id="neuron-stats" class="stats-bar"></div>
+    <div id="neuron-list" class="neuron-grid"></div>
+</div>
+
 <section class="input-section">
     <!-- Tab 切换 -->
     <div class="tabs">
@@ -34,15 +41,26 @@
             </label>
         </div>
         <button id="nl-prove-btn">开始证明</button>
-        <div class="examples">
-            <span>示例：</span>
-            <a href="#" class="nl-example" data-q="证明根号2是无理数">证明√2是无理数</a>
-            <a href="#" class="nl-example" data-q="17是不是质数">17是不是质数</a>
-            <a href="#" class="nl-example" data-q="证明素数无穷多">证明素数无穷多</a>
-            <a href="#" class="nl-example" data-q="验证7同余于2模5">7同余于2模5</a>
-            <a href="#" class="nl-example" data-q="帮我证明一下√5不是有理数">帮我证明√5不是有理数</a>
-        </div>
-    </div>
+<!-- 快捷测试题区域 -->
+<div class="quick-tests" style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+    <span style="font-size: 13px; color: #666; font-weight: bold;">💡 试试这些经典命题：</span>
+    
+    <button class="quick-btn" onclick="fillQuery('证明根号1087是无理数')" title="测试 Sympy 计算层（超大数的无理数判定）">
+        计算直觉：√1087 是无理数
+    </button>
+    
+    <button class="quick-btn" onclick="fillQuery('证明 n! 可以整除 n 个连续正整数的乘积')" title="测试跨谓词组合与符号计算">
+        跨谓词：n! 整除连续整数乘积
+    </button>
+    
+    <button class="quick-btn" onclick="fillQuery('若 a≡b (mod m) 且 b≡c (mod m)，证明 a≡c (mod m)')" title="测试概念神经元激活">
+        形式运算：同余传递性
+    </button>
+    
+    <button class="quick-btn" onclick="fillQuery('证明 2047 是素数')" title="测试快速判定（2047 实际上是合数，看系统能否证伪）">
+        快速判定：2047 是素数吗
+    </button>
+</div>    </div>
 
     <!-- 形式化输入（原有的） -->
     <div id="tab-formal" class="tab-content">
@@ -76,8 +94,88 @@
             <div id="theorems"></div>
         </section>
     </div>
+<style>
+    .quick-btn {
+        background: #eef2f5;
+        border: 1px solid #d0d7de;
+        border-radius: 6px;
+        padding: 6px 12px;
+        font-size: 13px;
+        color: #24292f;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .quick-btn:hover {
+        background: #0969da;
+        color: white;
+        border-color: #0969da;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+</style>
 
-    <script>
+<script>
+    function fillQuery(text) {
+        const input = document.getElementById('nl-query'); // 请确认输入框 id
+        if (input) {
+            input.value = text;
+        }
+    }
+
+// 加载神经元统计
+async function loadNeuronStats() {
+    const r = await fetch('/api/neuron_stats');
+    const d = await r.json();
+    document.getElementById('neuron-stats').innerHTML = `
+        <span>神经元总数：<b>${d.total}</b></span>
+        <span>边数：<b>${d.edges}</b></span>
+        <span>实例总数：<b>${d.total_instances}</b></span>
+        <span>类型分布：${Object.entries(d.by_type).map(([k,v]) => `${k}: ${v}`).join(' / ')}</span>
+    `;
+}
+
+// 加载神经元列表
+async function loadNeurons() {
+    const r = await fetch('/api/neurons');
+    const list = await r.json();
+    const container = document.getElementById('neuron-list');
+    container.innerHTML = list.map(n => `
+        <div class="neuron-card">
+            <div class="nid">${n.neuron_id}</div>
+            <div style="margin-top:6px;">
+                <span class="badge ${n.type}">${n.type}</span>
+                <span style="font-size:12px;color:#666;">
+                    N=${n.N} weight=${n.weight.toFixed(2)} instances=${n.instance_count}
+                </span>
+            </div>
+            <ul class="samples">
+                ${n.samples.map(s => `
+                    <li>
+                        <b>${s.source_clause}</b>:
+                        ${s.lower.join(' + ')}
+                        ${s.mediator ? `（中介 <code>${s.mediator}</code>）` : ''}
+                        ${s.anchor ? `（锚点 <code>${s.anchor}</code>）` : ''}
+                    </li>
+                `).join('')}
+            </ul>
+        </div>
+    `).join('');
+}
+
+// Tab 切换
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.style.display = 'none');
+        btn.classList.add('active');
+        const tab = btn.dataset.tab;
+        document.getElementById('tab-' + tab).style.display = 'block';
+        if (tab === 'neurons') {
+            loadNeuronStats();
+            loadNeurons();
+        }
+    });
+});
+
 // Tab 切换
 document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
@@ -295,6 +393,13 @@ function renderNLResult(data) {
         }
 
         loadTheorems();
+
+const viaTag = {
+    'neuron': '<span class="path-tag neuron">神经元激活</span>',
+    'chain':  '<span class="path-tag chain">链式推理</span>',
+    'sympy':  '<span class="path-tag sympy">sympy 计算</span>',
+}[result.via] || '';
+
     </script>
 </body>
 </html>

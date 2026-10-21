@@ -78,7 +78,11 @@ def substitute(term, subst):
     tname = type(term).__name__
     if tname == 'Var':
         if term in subst:
-            return substitute(subst[term], subst)
+            replacement = subst[term]
+            # ★ 防无限递归：如果替换的值就是自己（同名 Var），直接返回
+            if type(replacement).__name__ == 'Var' and replacement.name == term.name:
+                return term
+            return substitute(replacement, subst)
         return term
     if tname == 'Const':
         if not term.args:
@@ -874,7 +878,7 @@ def print_proof(proof: List[ProofStep], goal: Pred):
 
 
 # ★ 方案 A：默认只把这些字母当 Var，其余单字母一律当 Const
-DEFAULT_VAR_NAMES = ("n", "k", "x", "y", "z", "S", "N", "K")
+DEFAULT_VAR_NAMES = tuple('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') + ('n', 'k', 'x', 'y', 'z', 'S', 'N', 'K')
 
 
 def parse_term(t: str, var_names: Tuple[str, ...] = DEFAULT_VAR_NAMES):

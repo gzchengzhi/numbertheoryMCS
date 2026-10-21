@@ -3,3 +3,5 @@
 {"id": "T_MUL_DIVIDES", "name": "整数乘积整除性", "category": "基础", "head": "divides(a,times(a,c))", "body": ["integer(a)", "integer(c)"]}
 {"id": "T_FACT_INT", "name": "阶乘整性", "category": "基础", "head": "integer(factorial(n))", "body": []}
 {"id": "T_EQUAL_SUBST", "name": "等量代换", "category": "基础", "head": "divides(a,c)", "body": ["equals(c,times(a,d))", "divides(a,times(a,d))"]}
+{"id": "T_SQRT5_IRRATIONAL", "name": "根号5是无理数", "head": "irrational(sqrt(5))", "body": ["prime(5)", "T018_POW"], "category": "已验证"}
+
