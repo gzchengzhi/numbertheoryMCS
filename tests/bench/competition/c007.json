@@ -1,0 +1,1 @@
+{"id":"C007","statement":"费马小定理互质形式","goal":"congruent(power(a, minus(p,1)), 1, p)","premises":["prime(p)","coprime(a, p)"]}

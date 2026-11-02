@@ -1,0 +1,89 @@
+{"id":"COMP-001","name":"整除传递性","category":"竞赛基础","head":"divides(a, c)","body":["divides(a, b)","divides(b, c)"]}
+{"id":"COMP-002","name":"整除线性组合","category":"竞赛基础","head":"divides(a, plus(times(m,b),times(n,c)))","body":["divides(a, b)","divides(a, c)"]}
+{"id":"COMP-003","name":"整除乘法保持","category":"竞赛基础","head":"divides(times(a,c), times(b,c))","body":["divides(a, b)"]}
+{"id":"COMP-004","name":"整除反对称（绝对值）","category":"竞赛基础","head":"equals(abs(a), abs(b))","body":["divides(a, b)","divides(b, a)"]}
+{"id":"COMP-005","name":"带余除法余数为零等价","category":"竞赛基础","head":"divides(b, a)","body":["equals(a, plus(times(b,q), 0))"]}
+{"id":"COMP-006","name":"互质与裴蜀等式","category":"竞赛基础","head":"coprime(a, b)","body":["exists(x, exists(y, equals(gcd(a,b), plus(times(a,x),times(b,y)))))"]}
+{"id":"COMP-007","name":"裴蜀定理推论：整除线性组合","category":"竞赛基础","head":"divides(gcd(a,b), c)","body":["exists(x, exists(y, equals(c, plus(times(a,x),times(b,y)))))"]}
+{"id":"COMP-008","name":"欧几里得引理","category":"竞赛基础","head":"or(divides(p, a), divides(p, b))","body":["prime(p)","divides(p, times(a,b))"]}
+{"id":"COMP-009","name":"算术基本定理唯一性推论","category":"竞赛基础","head":"equals(a, b)","body":["forall(p, equals(prime_power_in(a,p), prime_power_in(b,p)))"]}
+{"id":"COMP-010","name":"素数无穷性（欧几里得构造）","category":"竞赛基础","head":"forall(n, exists(p, and(prime(p), gt(p, n))))","body":[]}
+
+{"id":"COMP-011","name":"同余自反性","category":"同余运算","head":"congruent(a, a, m)","body":["gt(m, 0)"]}
+{"id":"COMP-012","name":"同余对称性","category":"同余运算","head":"congruent(b, a, m)","body":["congruent(a, b, m)"]}
+{"id":"COMP-013","name":"同余传递性","category":"同余运算","head":"congruent(a, c, m)","body":["congruent(a, b, m)","congruent(b, c, m)"]}
+{"id":"COMP-014","name":"同余可加性","category":"同余运算","head":"congruent(plus(a,c), plus(b,d), m)","body":["congruent(a, b, m)","congruent(c, d, m)"]}
+{"id":"COMP-015","name":"同余可乘性","category":"同余运算","head":"congruent(times(a,c), times(b,d), m)","body":["congruent(a, b, m)","congruent(c, d, m)"]}
+{"id":"COMP-016","name":"同余幂保持","category":"同余运算","head":"congruent(power(a,n), power(b,n), m)","body":["congruent(a, b, m)","ge(n, 0)"]}
+{"id":"COMP-017","name":"同余与整除等价","category":"同余运算","head":"congruent(a, b, m)","body":["divides(m, minus(a,b))","gt(m, 0)"]}
+{"id":"COMP-018","name":"同余与整除等价（反向）","category":"同余运算","head":"divides(m, minus(a,b))","body":["congruent(a, b, m)"]}
+{"id":"COMP-019","name":"同余除法（互质情形）","category":"同余运算","head":"congruent(a, b, m)","body":["congruent(times(c,a), times(c,b), m)","coprime(c, m)"]}
+{"id":"COMP-020","name":"同余消去律（模数互质）","category":"同余运算","head":"congruent(a, b, div(m,d))","body":["congruent(times(d,a), times(d,b), m)","gt(d, 0)","divides(d, m)"]}
+
+{"id":"COMP-021","name":"费马小定理（互质形式）","category":"费马与欧拉","head":"congruent(power(a, minus(p,1)), 1, p)","body":["prime(p)","coprime(a, p)"]}
+{"id":"COMP-022","name":"费马小定理（任意整数形式）","category":"费马与欧拉","head":"congruent(power(a, p), a, p)","body":["prime(p)"]}
+{"id":"COMP-023","name":"费马小定理推论：逆元存在","category":"费马与欧拉","head":"exists(x, congruent(times(a,x), 1, p))","body":["prime(p)","not_divides(p, a)"]}
+{"id":"COMP-024","name":"欧拉定理","category":"费马与欧拉","head":"congruent(power(a, phi(m)), 1, m)","body":["coprime(a, m)","gt(m, 1)"]}
+{"id":"COMP-025","name":"欧拉函数素数情形","category":"费马与欧拉","head":"equals(phi(p), minus(p,1))","body":["prime(p)"]}
+{"id":"COMP-026","name":"欧拉函数积性","category":"费马与欧拉","head":"equals(phi(times(m,n)), times(phi(m),phi(n)))","body":["coprime(m, n)"]}
+{"id":"COMP-027","name":"欧拉函数乘积公式","category":"费马与欧拉","head":"equals(phi(n), times(n, product(minus(1, div(1,p)))))","body":["forall(p, implies(divides(p,n), prime(p)))"]}
+{"id":"COMP-028","name":"威尔逊定理","category":"费马与欧拉","head":"congruent(factorial(minus(p,1)), minus(0,1), p)","body":["prime(p)","gt(p, 1)"]}
+{"id":"COMP-029","name":"威尔逊定理逆定理","category":"费马与欧拉","head":"prime(p)","body":["congruent(factorial(minus(p,1)), minus(0,1), p)","gt(p, 1)"]}
+{"id":"COMP-030","name":"威尔逊定理推论：半阶乘平方","category":"费马与欧拉","head":"congruent(power(factorial(div(minus(p,1),2)), 2), power(minus(0,1), div(plus(p,1),2)), p)","body":["prime(p)","gt(p, 2)"]}
+
+{"id":"COMP-031","name":"中国剩余定理（两两互质）","category":"中国剩余定理","head":"exists(x, forall(i, congruent(x, a_i, m_i)))","body":["pairwise_coprime([m_i])"]}
+{"id":"COMP-032","name":"中国剩余定理解的存在性","category":"中国剩余定理","head":"exists(x, and(congruent(x, a, m1), congruent(x, b, m2)))","body":["coprime(m1, m2)"]}
+{"id":"COMP-033","name":"中国剩余定理解模唯一性","category":"中国剩余定理","head":"congruent(x, y, times(m1,m2))","body":["congruent(x, y, m1)","congruent(x, y, m2)","coprime(m1, m2)"]}
+{"id":"COMP-034","name":"广义中国剩余定理（非互质情形）","category":"中国剩余定理","head":"exists(x, and(congruent(x, a, m1), congruent(x, b, m2)))","body":["divides(gcd(m1,m2), minus(a,b))"]}
+{"id":"COMP-035","name":"中国剩余定理构造形式","category":"中国剩余定理","head":"congruent(x, plus(times(a1,times(M1,N1)), times(a2,times(M2,N2))), times(m1,m2))","body":["coprime(m1, m2)","equals(M1, div(times(m1,m2),m1))","equals(M2, div(times(m1,m2),m2))","congruent(times(M1,N1), 1, m1)","congruent(times(M2,N2), 1, m2)"]}
+
+{"id":"COMP-036","name":"素数大于一","category":"素数","head":"gt(p, 1)","body":["prime(p)"]}
+{"id":"COMP-037","name":"素数不可约","category":"素数","head":"or(equals(d, 1), equals(d, p))","body":["prime(p)","divides(d, p)","gt(d, 0)"]}
+{"id":"COMP-038","name":"素数平方根判别","category":"素数","head":"prime(n)","body":["gt(n, 1)","not_exists(d, and(gt(d,1), and(lt(d, plus(n,1)), divides(d, n))))"]}
+{"id":"COMP-039","name":"合数的最小素因子","category":"素数","head":"exists(p, and(prime(p), and(divides(p, n), le(power(p,2), n))))","body":["gt(n, 1)","not_prime(n)"]}
+{"id":"COMP-040","name":"素数阶乘构造：连续合数","category":"素数","head":"forall(k, and(lt(1,k), and(le(k,n), not_prime(plus(factorial(n),k)))))","body":["gt(n, 1)"]}
+
+{"id":"COMP-041","name":"勾股数参数化","category":"丢番图","head":"exists(m, exists(n, and(gt(m,n), and(coprime(m,n), and(equals(a, minus(power(m,2),power(n,2))), and(equals(b, times(2,times(m,n))), equals(c, plus(power(m,2),power(n,2)))))))))","body":["equals(plus(power(a,2),power(b,2)), power(c,2))","gt(a,0)","gt(b,0)","gt(c,0)"]}
+{"id":"COMP-042","name":"平方模4分类","category":"丢番图","head":"or(congruent(power(n,2), 0, 4), congruent(power(n,2), 1, 4))","body":[]}
+{"id":"COMP-043","name":"立方模9分类","category":"丢番图","head":"or(congruent(power(n,3), 0, 9), congruent(power(n,3), 1, 9), congruent(power(n,3), minus(0,1), 9))","body":[]}
+{"id":"COMP-044","name":"费马大定理 n=4 情形","category":"丢番图","head":"not_exists(a, exists(b, exists(c, and(gt(a,0), and(gt(b,0), and(gt(c,0), equals(plus(power(a,4),power(b,4)), power(c,4))))))))","body":[]}
+{"id":"COMP-045","name":"两平方和定理（素数情形）","category":"丢番图","head":"exists(x, exists(y, equals(p, plus(power(x,2),power(y,2)))))","body":["prime(p)","congruent(p, 1, 4)"]}
+{"id":"COMP-046","name":"两平方和定理（必要条件）","category":"丢番图","head":"not(congruent(p, 3, 4))","body":["prime(p)","exists(x, exists(y, equals(times(p,k), plus(power(x,2),power(y,2)))))","divides(p, times(x,y))"]}
+
+{"id":"COMP-047","name":"二次剩余定义","category":"二次剩余","head":"quadratic_residue(a, p)","body":["prime(p)","exists(x, congruent(power(x,2), a, p))"]}
+{"id":"COMP-048","name":"欧拉判别法","category":"二次剩余","head":"congruent(power(a, div(minus(p,1),2)), 1, p)","body":["prime(p)","gt(p,2)","quadratic_residue(a, p)"]}
+{"id":"COMP-049","name":"欧拉判别法（非剩余）","category":"二次剩余","head":"congruent(power(a, div(minus(p,1),2)), minus(0,1), p)","body":["prime(p)","gt(p,2)","not(quadratic_residue(a, p))","not_divides(p, a)"]}
+{"id":"COMP-050","name":"-1 的二次剩余性","category":"二次剩余","head":"quadratic_residue(minus(0,1), p)","body":["prime(p)","congruent(p, 1, 4)"]}
+{"id":"COMP-051","name":"-1 的非二次剩余性","category":"二次剩余","head":"not(quadratic_residue(minus(0,1), p))","body":["prime(p)","congruent(p, 3, 4)"]}
+{"id":"COMP-052","name":"二次剩余乘积封闭","category":"二次剩余","head":"quadratic_residue(times(a,b), p)","body":["prime(p)","quadratic_residue(a, p)","quadratic_residue(b, p)"]}
+{"id":"COMP-053","name":"二次剩余乘法逆","category":"二次剩余","head":"quadratic_residue(times(a,b), p)","body":["prime(p)","quadratic_residue(a, p)","not(quadratic_residue(b, p))"]}
+{"id":"COMP-054","name":"二次互反律（Legendre符号形式）","category":"二次剩余","head":"equals(legendre(p,q), times(power(minus(0,1), times(div(minus(p,1),2), div(minus(q,1),2))), legendre(q,p)))","body":["prime(p)","prime(q)","gt(p,2)","gt(q,2)","not(equals(p,q))"]}
+
+{"id":"COMP-055","name":"完全数欧几里得-欧拉形式","category":"特殊数","head":"exists(p, and(prime(p), equals(n, times(power(2,minus(p,1)), minus(power(2,p),1)))))","body":["perfect(n)","even(n)"]}
+{"id":"COMP-056","name":"偶完全数必要条件","category":"特殊数","head":"prime(minus(power(2,p),1))","body":["perfect(times(power(2,minus(p,1)), minus(power(2,p),1)))"]}
+{"id":"COMP-057","name":"梅森素数对应偶完全数","category":"特殊数","head":"perfect(times(power(2,minus(p,1)), minus(power(2,p),1)))","body":["prime(p)","prime(minus(power(2,p),1))"]}
+{"id":"COMP-058","name":"完全数约数和条件","category":"特殊数","head":"equals(sigma(n), times(2,n))","body":["perfect(n)"]}
+
+{"id":"COMP-059","name":"二次无理数判定（非完全平方）","category":"无理数","head":"irrational(sqrt(n))","body":["gt(n, 0)","not_exists(k, equals(power(k,2), n))"]}
+{"id":"COMP-060","name":"素数平方根无理性","category":"无理数","head":"irrational(sqrt(p))","body":["prime(p)"]}
+{"id":"COMP-061","name":"有理数平方根必要条件","category":"无理数","head":"exists(k, equals(n, power(k,2)))","body":["rational(sqrt(n))","gt(n, 0)"]}
+{"id":"COMP-062","name":"根号2无理性（经典）","category":"无理数","head":"irrational(sqrt(2))","body":[]}
+
+{"id":"COMP-063","name":"LTE引理（奇素数情形，差）","category":"LTE与进阶","head":"equals(prime_power_in(minus(power(x,n),power(y,n)), p), plus(prime_power_in(minus(x,y),p), prime_power_in(n,p)))","body":["prime(p)","gt(p,2)","divides(p, minus(x,y))","not_divides(p, x)","not_divides(p, y)"]}
+{"id":"COMP-064","name":"LTE引理推论：v_p(x^n-1)","category":"LTE与进阶","head":"equals(prime_power_in(minus(power(x,n),1), p), plus(prime_power_in(minus(x,1),p), prime_power_in(n,p)))","body":["prime(p)","gt(p,2)","divides(p, minus(x,1))","not_divides(p, x)"]}
+{"id":"COMP-065","name":"阶的定义与费马小定理结合","category":"LTE与进阶","head":"divides(ord(a, p), minus(p,1))","body":["prime(p)","coprime(a, p)"]}
+{"id":"COMP-066","name":"阶整除任意指数为零的幂","category":"LTE与进阶","head":"divides(ord(a, m), n)","body":["congruent(power(a,n), 1, m)","coprime(a, m)"]}
+{"id":"COMP-067","name":"原根存在性（素数模）","category":"LTE与进阶","head":"exists(g, equals(ord(g,p), minus(p,1)))","body":["prime(p)"]}
+{"id":"COMP-068","name":"伯兰特假设（素数间隙）","category":"LTE与进阶","head":"exists(p, and(prime(p), and(gt(p, n), lt(p, times(2,n)))))","body":["gt(n, 1)"]}
+
+{"id":"COMP-069","name":"同余方程组逐对合并","category":"中国剩余定理","head":"exists(x, and(congruent(x, a, m1), congruent(x, b, m2)))","body":["divides(gcd(m1,m2), minus(a,b))"]}
+{"id":"COMP-070","name":"模数乘积的同余等价","category":"同余运算","head":"congruent(a, b, times(m1,m2))","body":["congruent(a, b, m1)","congruent(a, b, m2)","coprime(m1, m2)"]}
+
+
+{"id":"COMP-076","name":"欧拉定理（图式层形式）","category":"费马与欧拉","head":"congruent(power(a,phi(m)), 1, m)","body":["coprime(a, m)","gt(m, 1)"]}
+{"id":"COMP-077","name":"素数p>3时p平方模24余1","category":"竞赛基础","head":"congruent(power(p,2), 1, 24)","body":["prime(p)","gt(p, 3)"]}
+
+{"id":"COMP-078","name":"整除乘法封闭（无共享）","category":"竞赛基础","head":"divides(times(a,c), times(b,d))","body":["divides(a, b)","divides(c, d)"]}
+{"id":"COMP-079","name":"同余幂保持（固定指数）","category":"同余运算","head":"congruent(power(a,k), power(b,k), m)","body":["congruent(a, b, m)","ge(k, 0)"]}
+{"id":"COMP-080","name":"同余保持gcd","category":"同余运算","head":"equals(gcd(a,m), gcd(b,m))","body":["congruent(a, b, m)"]}
+

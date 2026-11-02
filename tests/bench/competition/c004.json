@@ -1,0 +1,1 @@
+{"id":"C004","statement":"同余可加","goal":"congruent(plus(a,c), plus(b,d), m)","premises":["congruent(a, b, m)","congruent(c, d, m)"]}

@@ -1,0 +1,13 @@
+{
+  "problem": "two_digit_times9_digit_sum",
+  "oracle": "brute_force",
+  "version": "10.1",
+  "solutions": [
+    {"n": 18, "s_n": 9,  "s_9n": 9},
+    {"n": 27, "s_n": 9,  "s_9n": 9},
+    {"n": 36, "s_n": 9,  "s_9n": 9},
+    {"n": 45, "s_n": 9,  "s_9n": 9},
+    {"n": 90, "s_n": 9,  "s_9n": 9},
+    {"n": 99, "s_n": 18, "s_9n": 18}
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://numbertheoryMCS/schemas/iso_edge.schema.json",
+  "title": "IsomorphismEdge",
+  "description": "概念神经元之间的同构边。用于 11.0 跨谓词迁移；10.1 仅作设计输入，不参与推理。",
+  "type": "object",
+  "required": ["id", "src", "dst", "kind", "direction", "mapping", "verify", "confidence", "provenance"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "ISO::<src类别>::<src结构>::arity=<n>::<dst类别>::<dst结构>::arity=<m>",
+      "pattern": "^ISO::(S|T|SP)::[A-Za-z0-9_]+(?:<-[A-Za-z0-9_+]+)?(?:::@[0-9]-@[0-9])?::arity=[0-9]+::(S|T|SP)::[A-Za-z0-9_]+(?:<-[A-Za-z0-9_+]+)?(?:::@[0-9]-@[0-9])?::arity=[0-9]+$"
+    },
+    "src": {
+      "type": "string",
+      "description": "源神经元 id，必须存在于 concept_neurons.json",
+      "pattern": "^NEURON::(S|T|SP)::[A-Za-z0-9_]+(?:<-[A-Za-z0-9_+]+)?(?:::@[0-9]-@[0-9])?::arity=[0-9]+$"
+    },
+    "dst": {
+      "type": "string",
+      "description": "目标神经元 id，必须存在于 concept_neurons.json",
+      "pattern": "^NEURON::(S|T|SP)::[A-Za-z0-9_]+(?:<-[A-Za-z0-9_+]+)?(?:::@[0-9]-@[0-9])?::arity=[0-9]+$"
+    },
+    "kind": {
+      "type": "string",
+      "enum": ["structural", "semantic", "parameter_rename"],
+      "description": "structural=拓扑骨架同构，可自动迁移；semantic=语义同构，仅 WM 共激活；parameter_rename=仅参数重命名"
+    },
+    "direction": {
+      "type": "string",
+      "enum": ["one_way", "bi_directional"],
+      "default": "one_way"
+    },
+    "mapping": {
+      "type": "object",
+      "required": ["predicate_map", "param_map"],
+      "additionalProperties": false,
+      "properties": {
+        "predicate_map": {
+          "type": "object",
+          "description": "源谓词名 -> 目标谓词名",
+          "additionalProperties": { "type": "string" }
+        },
+        "param_map": {
+          "type": "object",
+          "description": "源参数名 -> 目标参数名/表达式；'_' 前缀表示迁移时需补的隐式参数",
+          "additionalProperties": { "type": "string" }
+        },
+        "domain_guard": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "迁移前必须满足的数学约束；含 'arity_mismatch' 前缀表示 arity 不同需补参数"
+        }
+      }
+    },
+    "verify": {
+      "type": "object",
+      "required": ["method"],
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": ["sympy_equiv", "unit_test", "manual_proof_ref"]
+        },
+        "test_ref": { "type": "string" },
+        "proof_ref": { "type": "string" }
+      }
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "provenance": {
+      "type": "string",
+      "description": "标注人/日期/依据"
+    }
+  }
+}

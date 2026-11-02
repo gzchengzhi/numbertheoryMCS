@@ -1,0 +1,5 @@
+{"id": "C098", "statement": "Dirichlet 特征 χ(1)=1", "goal": "equals(chi(1), 1)", "premises": ["dirichlet_character(chi, m)"]}
+{"id": "C099", "statement": "χ(ab) = χ(a)χ(b)", "goal": "equals(chi(times(a,b)), times(chi(a), chi(b)))", "premises": ["dirichlet_character(chi, m)"]}
+{"id": "C100", "statement": "gcd(a,m)>1 ⇒ χ(a)=0", "goal": "equals(chi(a), 0)", "premises": ["dirichlet_character(chi, m)", "gt(gcd(a,m), 1)"]}
+{"id": "C101", "statement": "非主特征的和 = 0", "goal": "equals(sum(a, 1, m, chi(a)), 0)", "premises": ["dirichlet_character(chi, m)", "not(is_principal_character(chi))"]}
+{"id": "C102", "statement": "Dirichlet 定理（模 m 素数无穷）", "goal": "forall(N, exists(p, and(prime(p), and(gt(p, N), congruent(p, a, m)))))", "premises": ["coprime(a, m)", "gt(m, 1)"]}

@@ -1,0 +1,24 @@
+{
+  "concept_neurons": {
+    "NEURON::S::exists<-c096_pythagorean::arity=1": {
+      "neuron_id": "NEURON::S::exists<-c096_pythagorean::arity=1",
+      "type": "single",
+      "lower": [
+        ["equals", ["plus(power(a,2),power(b,2))", "power(c,2)"]],
+        ["gt", ["a", "0"]],
+        ["gt", ["b", "0"]],
+        ["gt", ["c", "0"]]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "exists",
+        ["m", "exists(n, and(gt(m,n), coprime(m,n), equals(a, minus(power(m,2),power(n,2))), equals(b, times(2,times(m,n))), equals(c, plus(power(m,2),power(n,2)))))"]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    }
+  },
+  "neuron_edges": {}
+}

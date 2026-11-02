@@ -106,6 +106,7 @@ class AdaptiveStore(TheoremStore):
         self._signature_index: Dict[tuple, str] = {}
         self._current_chain_ids: Set[str] = set()
         self._learned_ids: Set[str] = set()
+        
         self.dependency_records: Dict[tuple, Dict[frozenset, int]] = defaultdict(
             lambda: defaultdict(int))
         super().__init__()
@@ -116,8 +117,28 @@ class AdaptiveStore(TheoremStore):
         self._sympy_decl_cache = None
         self._ensure_all_decls()
         self.concept_neurons: Dict[str, Dict] = {}
+        self._adj_index: Dict[str, List[Tuple[str, float]]] = {}
         self.neuron_edges: Dict[Tuple[str, str], float] = {}
         self._neurons_built = False
+        
+    def _adj_add(self, a, b, w):
+        """在 _adj_index 里加/更新边 (a,b)=w"""
+        # 去重更新：先删旧的
+        self._adj_index[a] = [(n, ww) for n, ww in self._adj_index.get(a, []) if n != b]
+        self._adj_index[b] = [(n, ww) for n, ww in self._adj_index.get(b, []) if n != a]
+        if w > EPSILON:
+            self._adj_index.setdefault(a, []).append((b, w))
+            self._adj_index.setdefault(b, []).append((a, w))
+    
+    def get_cooccur_neighbors(self, tid: str, threshold: float = EPSILON * 2.0,
+                              max_neighbors: Optional[int] = None
+                              ) -> List[Tuple[str, float]]:
+        # ★ 用邻接表，O(degree) 而非 O(E)
+        nbrs = [(n, w) for n, w in self._adj_index.get(tid, []) if w > threshold]
+        nbrs.sort(key=lambda x: x[1], reverse=True)
+        if max_neighbors is None:
+            return nbrs
+        return nbrs[:max_neighbors]
         
         # ========== 10.0 新增：type 附加 + 虚拟定理 ==========
         
@@ -314,6 +335,7 @@ class AdaptiveStore(TheoremStore):
             key = (cid, oid) if cid < oid else (oid, cid)
             if key not in self.cooccur_edges:
                 self.cooccur_edges[key] = EPSILON
+                
                 
     def mark_learned(self, ids: List[str]):
         """标记本次学习加入的定理，用于检索加成"""
@@ -607,6 +629,7 @@ class AdaptiveStore(TheoremStore):
             return
         w = max(EPSILON, DECAY_BASE ** (depth - 1))
         self.cooccur_edges[key] = w
+        self._adj_add(a, b, w)
         self.edge_depth[key] = depth
 
     # ============================================================
@@ -769,6 +792,7 @@ class AdaptiveStore(TheoremStore):
             parts = key.split("|")
             if len(parts) == 2:
                 self.cooccur_edges[(parts[0], parts[1])] = w
+                self._adj_add(parts[0], parts[1], w)
         for key, d in data.get("edge_depth", {}).items():
             parts = key.split("|")
             if len(parts) == 2:
@@ -957,6 +981,7 @@ class AdaptiveStore(TheoremStore):
                     continue
                 key = (a, b) if a < b else (b, a)
                 w = self.cooccur_edges.get(key, EPSILON)
+                self._adj_add(a, b, self.cooccur_edges[key])   # ★ 新增
                 self.cooccur_edges[key] = min(MAX_WEIGHT, w + alpha)
 
     def weaken_cooccurrence(self, attempted_ids: List[str], beta: float = 0.05):
@@ -968,6 +993,7 @@ class AdaptiveStore(TheoremStore):
                     continue
                 key = (a, b) if a < b else (b, a)
                 w = self.cooccur_edges.get(key, EPSILON)
+                self._adj_add(a, b, self.cooccur_edges[key])   # ★ 新增
                 self.cooccur_edges[key] = max(MIN_WEIGHT, w - beta)
 
     def get_cooccur_neighbors(self, tid: str, threshold: float = EPSILON * 2.0,

@@ -16,6 +16,12 @@ from dataclasses import dataclass
 #from adaptive_store import AdaptiveStore
 
 # ============================================================
+# 13.0.2: lower=[] 时返回 True（C028 无 premises or 嵌套）
+# ============================================================
+ENABLE_EMPTY_LOWER = False
+ENABLE_SUBST_CONSISTENCY = False
+
+# ============================================================
 # 一、项与公式
 # ============================================================
 
@@ -201,7 +207,7 @@ class ProofStep:
 
 class Prover:
 
-    def __init__(self, store, max_depth: int = 12):
+    def __init__(self, store, max_depth=12, max_nodes=None, probe=None):
         # 兼容两种用法：
         # 1. store 是 List[HornClause]（旧用法）
         # 2. store 是 AdaptiveStore（新用法，有 retrieve_adaptive 方法）
@@ -212,6 +218,9 @@ class Prover:
             self.store = store
             self.db = store.clauses
         self.max_depth = max_depth
+        self.max_nodes = max_nodes
+        from probe import NoopProbe
+        self.probe = probe or NoopProbe()
         self.step_count = 0
         self.max_steps = 10
         self.visited: Set[str] = set()
@@ -310,9 +319,53 @@ class Prover:
         if type(goal).__name__ != 'Pred':
             return ('?', ())
         return (goal.name, tuple(walk(a) for a in goal.args))
+    
+    def _check_subst_consistency(self, subst):
+        """
+        检查 substitution 是否和 self.db 里的 PREM_* 一致。
+        - Var 绑 Const("1")，但 PREM 有 prime(Var) → 矛盾
+        - Var 绑 Const("0")，但 PREM 有 nonzero(Var) → 矛盾
+        - Var 绑 Const("0"/"1")，但 PREM 有 gt(Var, "0"/"1") → 矛盾
+        """
+        if not ENABLE_SUBST_CONSISTENCY:
+            return True
+        for var, val in subst.items():
+            vn = getattr(var, "name", None)
+            cn = getattr(val, "name", None) if hasattr(val, "name") else None
+            if vn is None or cn is None:
+                continue
+            for clause in self.db:
+                if not clause.id.startswith("PREM_"):
+                    continue
+                for p in [clause.head] + list(clause.body):
+                    if not hasattr(p, "args") or not p.args:
+                        continue
+                    arg0 = getattr(p.args[0], "name", None)
+                    if arg0 != vn:
+                        continue
+                    if p.name == "prime" and cn == "1":
+                        return False
+                    if p.name == "nonzero" and cn == "0":
+                        return False
+                    if p.name == "gt" and len(p.args) >= 2:
+                        arg1 = getattr(p.args[1], "name", None)
+                        if arg1 in ("0", "1") and cn in ("0", "1"):
+                            try:
+                                if int(cn) <= int(arg1):
+                                    return False
+                            except (ValueError, TypeError):
+                                pass
+        return True
 
     def _prove_recursive(self, goal, subst, depth, path, strategy="direct",
                          extra_db=None, energy=10.0, strict_prem=True):
+        
+        # _prove_recursive 开头
+        if energy < 0.5 ** depth:
+            self.probe.mark_energy_exhausted(depth)   # ★ 打标，不改行为
+            return None
+        
+        self._visit(depth)
         # ★ 改动 1：签名加 strict_prem=True
         if energy < 0.5 ** depth:
             return None
@@ -404,8 +457,34 @@ class Prover:
                     return 0
                 return sum(1 for a in t.args if type(a).__name__ == 'Var')
             candidates = sorted(candidates, key=lambda c: -_count_top_vars(c.head))
+      
+        def _wm_filter_clauses(self, candidates, wm, goal):
+            """
+            链式层 WM 过滤：保留满足以下任一条件的候选：
+              1. c.head.name == goal.name（直接可用的定理，必须保留）
+              2. c.head.name in wm.topic_terms（head 谓词与主题相关）
+              3. c.body 里有谓词名 in wm.topic_terms（body 能提供主题相关的子目标）
+              4. c.id 是 PREM_ 开头（前提，必须保留）
+            """
+            result = []
+            for c in candidates:
+                if c.id.startswith("PREM_"):
+                    result.append(c); continue
+                if c.head.name == goal.name:
+                    result.append(c); continue
+                if c.head.name in wm.topic_terms:
+                    result.append(c); continue
+                if any(b.name in wm.topic_terms for b in c.body):
+                    result.append(c); continue
+                # 都不满足 → 与主题无关，跳过
+            return result
 
-                # ★ 细粒度去重：记录 (clause_id, goal_sig) 对
+        # ★ WM 过滤：只保留与主题相关的候选
+        wm = getattr(self, "_active_wm", None)
+        if wm is not None and wm.topic:
+            candidates = self._wm_filter_clauses(candidates, wm, goal)
+
+        # ★ 细粒度去重：记录 (clause_id, goal_sig) 对
         used_goals = set()
         for step in path:
             step_sig = self._goal_signature(step.subgoal)
@@ -431,6 +510,7 @@ class Prover:
 
         #used_ids = {step.clause.id for step in path}
         for clause in candidates:
+            self._visit(depth)
 
 
             #print(f"[TRY] d={depth} {clause.id} goal={goal}")   # ★ 加
@@ -449,7 +529,10 @@ class Prover:
             # ★ 改动 2：删掉了重复的 unify 调用
 
             if new_subst is None:
-                #print(f"[FAIL] {clause.id}")                    # 加回来                
+                #print(f"[FAIL] {clause.id}")                    # 加回来
+                continue
+            # ★ 12.8 P2: substitution 一致性检查
+            if not self._check_subst_consistency(new_subst):
                 continue
             #print(f"[OK] {clause.id} subst={new_subst}")        # 加回来
 
@@ -806,6 +889,13 @@ class Prover:
                             except (KeyError, ValueError):
                                 pass
         return proof
+    
+    def _visit(self, depth):
+        self.probe.visit(depth)
+        if self.max_nodes is not None and self.probe.nodes_visited > self.max_nodes:
+            from probe import SearchBudgetExceeded
+            raise SearchBudgetExceeded(
+                f"max_nodes={self.max_nodes} exceeded at depth={depth}")
 
 # ============================================================
 # 六、输出

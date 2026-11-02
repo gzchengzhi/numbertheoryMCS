@@ -1,0 +1,120 @@
+{"id": "C001", "statement": "a|b, b|c ⇒ a|c", "goal": "divides(a, c)", "premises": ["divides(a, b)", "divides(b, c)"]}
+{"id": "C002", "statement": "a≡b, b≡c ⇒ a≡c", "goal": "congruent(a, c, m)", "premises": ["congruent(a, b, m)", "congruent(b, c, m)"]}
+{"id": "C003", "statement": "a|b, a|c ⇒ a|(b+c)", "goal": "divides(a, plus(b, c))", "premises": ["divides(a, b)", "divides(a, c)"]}
+{"id": "C004", "statement": "同余可加", "goal": "congruent(plus(a,c), plus(b,d), m)", "premises": ["congruent(a, b, m)", "congruent(c, d, m)"]}
+{"id": "C005", "statement": "同余可乘", "goal": "congruent(times(a,c), times(b,d), m)", "premises": ["congruent(a, b, m)", "congruent(c, d, m)"]}
+{"id": "C006", "statement": "费马小定理", "goal": "congruent(power(a, p), a, p)", "premises": ["prime(p)"]}
+{"id": "C007", "statement": "费马小定理互质形式", "goal": "congruent(power(a, minus(p,1)), 1, p)", "premises": ["prime(p)", "coprime(a, p)"]}
+{"id": "C008", "statement": "欧拉定理", "goal": "congruent(power(a, phi(m)), 1, m)", "premises": ["coprime(a, m)", "gt(m, 1)"]}
+{"id": "C009", "statement": "p>3素数p²≡1 mod 24", "goal": "congruent(power(p,2), 1, 24)", "premises": ["prime(p)", "gt(p, 3)"]}
+{"id": "C010", "statement": "p≡1 mod 4 ⇒ p为两平方和", "goal": "exists(x, exists(y, equals(p, plus(power(x,2), power(y,2)))))", "premises": ["prime(p)", "congruent(p, 1, 4)"]}
+{"id": "C011", "statement": "a|b ⇒ a|bc", "goal": "divides(a, times(b,c))", "premises": ["divides(a, b)"]}
+{"id": "C012", "statement": "a≡b, c≡d ⇒ a-c≡b-d", "goal": "congruent(minus(a,c), minus(b,d), m)", "premises": ["congruent(a, b, m)", "congruent(c, d, m)"]}
+{"id": "C013", "statement": "a≡b ⇒ a³≡b³", "goal": "congruent(power(a, 3), power(b, 3), m)", "premises": ["congruent(a, b, m)", "ge(3, 0)"]}
+{"id": "C014", "statement": "a|b, a|c ⇒ a|(b-c)", "goal": "divides(a, minus(b, c))", "premises": ["divides(a, b)", "divides(a, c)"]}
+{"id": "C015", "statement": "a|b ⇒ ak|bk", "goal": "divides(times(a, k), times(b, k))", "premises": ["divides(a, b)"]}
+{"id": "C016", "statement": "p素数 ⇒ p>1", "goal": "gt(p, 1)", "premises": ["prime(p)"]}
+{"id": "C017", "statement": "p素数, d|p, d>0 ⇒ d=1或d=p", "goal": "or(equals(d, 1), equals(d, p))", "premises": ["prime(p)", "divides(d, p)", "gt(d, 0)"]}
+{"id": "C018", "statement": "p素数 ⇒ 无真因子", "goal": "not(exists(d, and(gt(d,1), and(lt(d,p), divides(d,p)))))", "premises": ["prime(p)"]}
+{"id": "C019", "statement": "n>1合数 ⇒ 有素数因子", "goal": "exists(p, and(prime(p), divides(p, n)))", "premises": ["gt(n, 1)", "not_prime(n)"]}
+{"id": "C020", "statement": "p素数且p∤a ⇒ a^(p-1)≡1", "goal": "congruent(power(a, minus(p,1)), 1, p)", "premises": ["prime(p)", "not_divides(p, a)"]}
+{"id": "C021", "statement": "a≡b ⇒ a^k≡b^k (k≥0)", "goal": "congruent(power(a, k), power(b, k), m)", "premises": ["congruent(a, b, m)", "ge(k, 0)"]}
+{"id": "C022", "statement": "p≡1 mod 4 ⇒ -1是二次剩余", "goal": "quadratic_residue(minus(0,1), p)", "premises": ["prime(p)", "congruent(p, 1, 4)"]}
+{"id": "C023", "statement": "奇数平方模8余1", "goal": "congruent(power(n,2), 1, 8)", "premises": ["odd(n)"]}
+{"id": "C024", "statement": "n²≡n mod 2", "goal": "congruent(power(n,2), n, 2)", "premises": []}
+{"id": "C025", "statement": "a|b, b|a ⇒ |a|=|b|", "goal": "equals(abs(a), abs(b))", "premises": ["divides(a, b)", "divides(b, a)"]}
+{"id": "C026", "statement": "a≡b mod m, d|m ⇒ a≡b mod d", "goal": "congruent(a, b, d)", "premises": ["congruent(a, b, m)", "divides(d, m)"]}
+{"id": "C027", "statement": "a|b, c|d ⇒ ac|bd", "goal": "divides(times(a,c), times(b,d))", "premises": ["divides(a, b)", "divides(c, d)"]}
+{"id": "C028", "statement": "3|a 或 3|b 或 3|(a+b) 至少一个", "goal": "or(divides(3, a), or(divides(3, b), divides(3, plus(a,b))))", "premises": []}
+{"id": "C029", "statement": "p|a² ⇒ p|a (p素数)", "goal": "divides(p, a)", "premises": ["prime(p)", "divides(p, power(a,2))"]}
+{"id": "C030", "statement": "a≡b mod m ⇒ gcd(a,m)=gcd(b,m)", "goal": "equals(gcd(a,m), gcd(b,m))", "premises": ["congruent(a, b, m)"]}
+{"id": "C031", "statement": "a|b, b|c, c|d ⇒ a|d", "goal": "divides(a, d)", "premises": ["divides(a, b)", "divides(b, c)", "divides(c, d)"]}
+{"id": "C032", "statement": "a≡b mod m, b≡c mod m, c≡d mod m ⇒ a≡d", "goal": "congruent(a, d, m)", "premises": ["congruent(a, b, m)", "congruent(b, c, m)", "congruent(c, d, m)"]}
+{"id": "C033", "statement": "a|b ⇒ a|(-b)", "goal": "divides(a, minus(0, b))", "premises": ["divides(a, b)"]}
+{"id": "C034", "statement": "a|b, c|d ⇒ a*c | b*d", "goal": "divides(times(a,c), times(b,d))", "premises": ["divides(a, b)", "divides(c, d)"]}
+{"id": "C035", "statement": "a≡b mod m ⇒ a+c≡b+c mod m", "goal": "congruent(plus(a,c), plus(b,c), m)", "premises": ["congruent(a, b, m)"]}
+{"id": "C036", "statement": "p 素数, p|a*b ⇒ p|a 或 p|b", "goal": "or(divides(p, a), divides(p, b))", "premises": ["prime(p)", "divides(p, times(a,b))"]}
+{"id": "C037", "statement": "p 素数, p|a² ⇒ p|a", "goal": "divides(p, a)", "premises": ["prime(p)", "divides(p, power(a,2))"]}
+{"id": "C038", "statement": "p 素数, p>2 ⇒ p 是奇数", "goal": "odd(p)", "premises": ["prime(p)", "gt(p, 2)"]}
+{"id": "C039", "statement": "p 素数 ⇒ p² 不是素数", "goal": "not_prime(power(p, 2))", "premises": ["prime(p)"]}
+{"id": "C040", "statement": "p, q 素数, p|q ⇒ p=q", "goal": "equals(p, q)", "premises": ["prime(p)", "prime(q)", "divides(p, q)"]}
+{"id": "C041", "statement": "a≡b mod m, n>0 ⇒ a^n≡b^n mod m", "goal": "congruent(power(a,n), power(b,n), m)", "premises": ["congruent(a, b, m)", "gt(n, 0)"]}
+{"id": "C042", "statement": "p 素数 ⇒ a^p≡a mod p", "goal": "congruent(power(a,p), a, p)", "premises": ["prime(p)"]}
+{"id": "C043", "statement": "p 素数, p∤a ⇒ a^(p-1)≡1 mod p", "goal": "congruent(power(a,minus(p,1)), 1, p)", "premises": ["prime(p)", "not_divides(p, a)"]}
+{"id": "C044", "statement": "a≡b mod m ⇒ a²≡b² mod m", "goal": "congruent(power(a,2), power(b,2), m)", "premises": ["congruent(a, b, m)"]}
+{"id": "C045", "statement": "a≡b mod m, c≡d mod m ⇒ a*c≡b*d mod m（重复）", "goal": "congruent(times(a,c), times(b,d), m)", "premises": ["congruent(a, b, m)", "congruent(c, d, m)"]}
+{"id": "C046", "statement": "gcd(a,b)|a", "goal": "divides(gcd(a,b), a)", "premises": []}
+{"id": "C047", "statement": "gcd(a,b)|b", "goal": "divides(gcd(a,b), b)", "premises": []}
+{"id": "C048", "statement": "a|m, b|m, coprime(a,b) ⇒ ab|m", "goal": "divides(times(a,b), m)", "premises": ["divides(a, m)", "divides(b, m)", "coprime(a, b)"]}
+{"id": "C049", "statement": "coprime(a,b) ⇒ gcd(a,b)=1", "goal": "equals(gcd(a,b), 1)", "premises": ["coprime(a, b)"]}
+{"id": "C050", "statement": "a|b ⇒ gcd(a,b)=a", "goal": "equals(gcd(a,b), a)", "premises": ["divides(a, b)"]}
+{"id": "C051", "statement": "欧拉判别法：QR(a,p) ⇒ a^((p-1)/2)≡1", "goal": "congruent(power(a, div(minus(p,1),2)), 1, p)", "premises": ["prime(p)", "quadratic_residue(a, p)"]}
+{"id": "C052", "statement": "-1 是 QR mod p ⇔ p≡1 mod 4", "goal": "quadratic_residue(minus(0,1), p)", "premises": ["prime(p)", "congruent(p, 1, 4)"]}
+{"id": "C053", "statement": "QR 乘积封闭", "goal": "quadratic_residue(times(a,b), p)", "premises": ["prime(p)", "quadratic_residue(a, p)", "quadratic_residue(b, p)"]}
+{"id": "C054", "statement": "QR × NQR = NQR", "goal": "not(quadratic_residue(times(a,b), p))", "premises": ["prime(p)", "quadratic_residue(a, p)", "not(quadratic_residue(b, p))"]}
+{"id": "C055", "statement": "p≡3 mod 4 ⇒ -1 非 QR", "goal": "irrational(sqrt(p))", "premises": ["prime(p)"]}
+{"id": "C056", "statement": "阶整除 p-1", "goal": "divides(ord(a,p), minus(p,1))", "premises": ["prime(p)", "coprime(a, p)"]}
+{"id": "C057", "statement": "阶整除任意指数为零的幂", "goal": "divides(ord(a,m), n)", "premises": ["congruent(power(a,n), 1, m)", "coprime(a, m)"]}
+{"id": "C058", "statement": "p 素数 ⇒ 原根存在", "goal": "exists(g, equals(ord(g,p), minus(p,1)))", "premises": ["prime(p)"]}
+{"id": "C059", "statement": "n|m, m|n ⇒ |n|=|m|", "goal": "equals(abs(n), abs(m))", "premises": ["divides(n, m)", "divides(m, n)"]}
+{"id": "C060", "statement": "a|b ⇒ gcd(a,b)=a", "goal": "equals(gcd(a,b), a)", "premises": ["divides(a, b)"]}
+{"id": "C061", "statement": "CRT 两两互质 ⇒ 有解", "goal": "exists(x, forall(i, congruent(x, a_i, m_i)))", "premises": ["pairwise_coprime([m_i])"]}
+{"id": "C062", "statement": "CRT 解模唯一", "goal": "congruent(x, y, times(m1,m2))", "premises": ["congruent(x, y, m1)", "congruent(x, y, m2)", "coprime(m1, m2)"]}
+{"id": "C063", "statement": "广义 CRT", "goal": "exists(x, and(congruent(x, a, m1), congruent(x, b, m2)))", "premises": ["divides(gcd(m1,m2), minus(a,b))"]}
+{"id": "C064", "statement": "有理数平方根 ⇔ 完全平方", "goal": "exists(k, equals(n, power(k,2)))", "premises": ["rational(sqrt(n))", "gt(n, 0)"]}
+{"id": "C065", "statement": "√2 无理", "goal": "irrational(sqrt(2))", "premises": ["prime(2)"]}
+{"id": "C066", "statement": "偶完全数 = 2^(p-1)(2^p-1)", "goal": "exists(p, and(prime(p), equals(n, times(power(2,minus(p,1)), minus(power(2,p),1)))))", "premises": ["perfect(n)", "even(n)"]}
+{"id": "C067", "statement": "偶完全数 ⇒ 2^p-1 素数", "goal": "prime(minus(power(2,p),1))", "premises": ["perfect(times(power(2,minus(p,1)), minus(power(2,p),1)))"]}
+{"id": "C068", "statement": "梅森素数 ⇒ 偶完全数", "goal": "perfect(times(power(2,minus(p,1)), minus(power(2,p),1)))", "premises": ["prime(p)", "prime(minus(power(2,p),1))"]}
+{"id": "C069", "statement": "σ(n)=2n ⇔ perfect(n)", "goal": "equals(sigma(n), times(2,n))", "premises": ["perfect(n)"]}
+{"id": "C070", "statement": "LTE: v_p(x^n-y^n)", "goal": "equals(prime_power_in(minus(power(x,n),power(y,n)), p), plus(prime_power_in(minus(x,y),p), prime_power_in(n,p)))", "premises": ["prime(p)", "gt(p,2)", "divides(p, minus(x,y))", "not_divides(p, x)", "not_divides(p, y)"]}
+{"id": "C071", "statement": "a≡b, n>0 ⇒ a^n≡b^n", "goal": "congruent(power(a,n), power(b,n), m)", "premises": ["congruent(a, b, m)", "gt(n, 0)"]}
+{"id": "C072", "statement": "p 素数 ⇒ p² 不是素数", "goal": "not_prime(power(p,2))", "premises": ["prime(p)"]}
+{"id": "C073", "statement": "p 素数, p|ab ⇒ p|a 或 p|b", "goal": "or(divides(p, a), divides(p, b))", "premises": ["prime(p)", "divides(p, times(a,b))"]}
+{"id": "C074", "statement": "a|b, b|a ⇒ |a|=|b|", "goal": "equals(abs(a), abs(b))", "premises": ["divides(a, b)", "divides(b, a)"]}
+{"id": "C075", "statement": "a|m, b|m, coprime(a,b) ⇒ ab|m", "goal": "divides(times(a,b), m)", "premises": ["divides(a, m)", "divides(b, m)", "coprime(a, b)"]}
+{"id": "C076", "statement": "gcd(a,b)=1 ⇔ coprime(a,b)", "goal": "equals(gcd(a,b), 1)", "premises": ["coprime(a, b)"]}
+{"id": "C077", "statement": "p≡1 mod 4 ⇒ p 是两平方和", "goal": "exists(x, exists(y, equals(p, plus(power(x,2), power(y,2)))))", "premises": ["prime(p)", "congruent(p, 1, 4)"]}
+{"id": "C078", "statement": "奇数平方模8余1", "goal": "congruent(power(n,2), 1, 8)", "premises": ["odd(n)"]}
+{"id": "C079", "statement": "n²≡n mod 2", "goal": "congruent(power(n,2), n, 2)", "premises": []}
+{"id": "C080", "statement": "奇合数有奇素因子", "goal": "exists(p, and(prime(p), and(odd(p), divides(p, n))))", "premises": ["odd(n)", "gt(n, 1)", "not_prime(n)"]}
+{"id": "C081", "statement": "有限连分数存在", "goal": "finite_continued_fraction(a, b)", "premises": ["gt(b, 0)"]}
+{"id": "C082", "statement": "有理数有有限连分数", "goal": "exists(cf, finite_continued_fraction(cf, r))", "premises": ["rational(r)"]}
+{"id": "C083", "statement": "无理数有无限连分数", "goal": "not(finite_continued_fraction(cf, r))", "premises": ["irrational(r)"]}
+{"id": "C084", "statement": "√2 的连分数周期 [1;2,2,2,...]", "goal": "periodic_continued_fraction(sqrt(2), list(1,2,2,2))", "premises": []}
+{"id": "C085", "statement": "二次无理数连分数周期", "goal": "periodic_continued_fraction(sqrt(d), cf)", "premises": ["non_square_positive(d)"]}
+{"id": "C086", "statement": "连分数收敛子逼近", "goal": "lt(abs(minus(r, div(p_n, q_n))), div(1, power(q_n, 2)))", "premises": ["continued_fraction_convergent(r, p_n, q_n)"]}
+{"id": "C087", "statement": "v_p(ab) = v_p(a) + v_p(b)", "goal": "equals(prime_power_in(times(a,b), p), plus(prime_power_in(a,p), prime_power_in(b,p)))", "premises": ["prime(p)", "nonzero(a)", "nonzero(b)"]}
+{"id": "C088", "statement": "v_p(a+b) ≥ min(v_p(a), v_p(b))", "goal": "ge(prime_power_in(plus(a,b), p), min(prime_power_in(a,p), prime_power_in(b,p)))", "premises": ["prime(p)"]}
+{"id": "C089", "statement": "v_p(a+b) = min 当 v_p(a)≠v_p(b)", "goal": "equals(prime_power_in(plus(a,b), p), min(prime_power_in(a,p), prime_power_in(b,p)))", "premises": ["prime(p)", "not(equals(prime_power_in(a,p), prime_power_in(b,p)))"]}
+{"id": "C090", "statement": "v_p(n!) = Σ floor(n/p^k)", "goal": "equals(prime_power_in(factorial(n), p), sum(k, 1, n, floor(div(n, power(p,k)))))", "premises": ["prime(p)"]}
+{"id": "C091", "statement": "LTE: v_p(x^n - y^n)", "goal": "equals(prime_power_in(minus(power(x,n), power(y,n)), p), plus(prime_power_in(minus(x,y),p), prime_power_in(n,p)))", "premises": ["prime(p)", "gt(p,2)", "divides(p, minus(x,y))", "not_divides(p, x)", "not_divides(p, y)"]}
+{"id": "C092", "statement": "v_2(x^n - y^n) 奇 n", "goal": "equals(prime_power_in(minus(power(x,n), power(y,n)), 2), prime_power_in(minus(x,y),2))", "premises": ["odd(n)", "odd(x)", "odd(y)"]}
+{"id": "C093", "statement": "判别式 Δ = b²-4ac", "goal": "equals(discriminant(a,b,c), minus(power(b,2), times(4,times(a,c))))", "premises": []}
+{"id": "C094", "statement": "二次型表示 n ⇒ Δ 是二次剩余 mod 4n", "goal": "quadratic_residue(discriminant(a,b,c), times(4,n))", "premises": ["represents(a,b,c,n)"]}
+{"id": "C095", "statement": "两平方和 = 范数形式", "goal": "equals(times(plus(power(x,2),power(y,2)), plus(power(u,2),power(v,2))), plus(power(minus(times(x,u),times(y,v)),2), power(plus(times(x,v),times(y,u)),2)))", "premises": []}
+{"id": "C096", "statement": "勾股三元组参数化", "goal": "exists(m, exists(n, and(gt(m,n), coprime(m,n), equals(a, minus(power(m,2),power(n,2))), equals(b, times(2,times(m,n))), equals(c, plus(power(m,2),power(n,2))))))", "premises": ["equals(plus(power(a,2),power(b,2)), power(c,2))", "gt(a,0)", "gt(b,0)", "gt(c,0)"]}
+{"id": "C097", "statement": "x²+y² 的素因子 ≡1 mod 4 或 =2", "goal": "or(equals(p, 2), congruent(p, 1, 4))", "premises": ["prime(p)", "divides(p, plus(power(x,2), power(y,2)))", "coprime(x, y)"]}
+{"id": "C098", "statement": "Dirichlet 特征 χ(1) = 1", "goal": "equals(chi(1), 1)", "premises": ["dirichlet_character(chi, m)"]}
+{"id": "C099", "statement": "χ(ab) = χ(a)χ(b)", "goal": "equals(chi(times(a,b)), times(chi(a), chi(b)))", "premises": ["dirichlet_character(chi, m)"]}
+{"id": "C100", "statement": "χ(a) = 0 当 gcd(a,m) > 1", "goal": "equals(chi(a), 0)", "premises": ["dirichlet_character(chi, m)", "gt(gcd(a,m), 1)"]}
+{"id": "C101", "statement": "非主特征的和 = 0", "goal": "equals(sum(a, 1, m, chi(a)), 0)", "premises": ["dirichlet_character(chi, m)", "not(is_principal_character(chi))"]}
+{"id": "C102", "statement": "Dirichlet 定理（模 m 素数无穷）", "goal": "forall(N, exists(p, and(prime(p), and(gt(p, N), congruent(p, a, m)))))", "premises": ["coprime(a, m)", "gt(m, 1)"]}
+{"id": "C103", "statement": "椭圆曲线判别式 Δ ≠ 0", "goal": "not(equals(discriminant_ec(E), 0))", "premises": ["elliptic_curve(E)"]}
+{"id": "C104", "statement": "Mordell-Weil 定理", "goal": "finitely_generated(ec_points(E))", "premises": ["elliptic_curve(E)"]}
+{"id": "C105", "statement": "Hasse 界", "goal": "le(abs(minus(count_points(E, p), plus(p,1))), times(2, sqrt(p)))", "premises": ["elliptic_curve(E)"]}
+{"id": "C106", "statement": "群律结合性", "goal": "equals(add_ec(add_ec(P, Q), R), add_ec(P, add_ec(Q, R)))", "premises": ["elliptic_curve(E)"]}
+{"id": "C107", "statement": "无穷远点是单位元", "goal": "equals(add_ec(P, infinity), P)", "premises": ["elliptic_curve(E)"]}
+{"id": "C108", "statement": "Wilson 定理", "goal": "congruent(factorial(minus(p,1)), minus(0,1), p)", "premises": ["prime(p)", "gt(p, 1)"]}
+{"id": "C109", "statement": "Wilson 逆定理", "goal": "prime(p)", "premises": ["congruent(factorial(minus(p,1)), minus(0,1), p)", "gt(p, 1)"]}
+{"id": "C110", "statement": "欧拉函数素数幂", "goal": "equals(phi(power(p,k)), times(minus(p,1), power(p, minus(k,1))))", "premises": ["prime(p)", "gt(k, 0)"]}
+{"id": "C111", "statement": "欧拉函数乘积公式", "goal": "equals(phi(n), times(n, product(minus(1, div(1,p)))))", "premises": ["forall(p, implies(divides(p,n), prime(p)))"]}
+{"id": "C112", "statement": "中国剩余定理构造", "goal": "congruent(x, plus(times(a1,times(M1,N1)), times(a2,times(M2,N2))), times(m1,m2))", "premises": ["coprime(m1, m2)", "equals(M1, div(times(m1,m2),m1))", "equals(M2, div(times(m1,m2),m2))", "congruent(times(M1,N1), 1, m1)", "congruent(times(M2,N2), 1, m2)"]}
+{"id": "C113", "statement": "欧拉定理", "goal": "congruent(power(a, phi(m)), 1, m)", "premises": ["coprime(a, m)", "gt(m, 1)"]}
+{"id": "C114", "statement": "费马小定理推论：a^p ≡ a", "goal": "congruent(power(a, p), a, p)", "premises": ["prime(p)"]}
+{"id": "C115", "statement": "二项式系数 C(p,k) ≡ 0 mod p", "goal": "congruent(binomial(p,k), 0, p)", "premises": ["prime(p)", "gt(k, 0)", "lt(k, p)"]}
+{"id": "C116", "statement": "Lucas 定理", "goal": "congruent(binomial(n,k), times(binomial(n0,k0), binomial(n1,k1)), p)", "premises": ["prime(p)", "equals(n, plus(n0, times(p,n1)))", "equals(k, plus(k0, times(p,k1)))", "lt(n0, p)", "lt(k0, p)"]}
+{"id": "C117", "statement": "p 素数 ⇒ (p-1)! ≡ -1", "goal": "congruent(factorial(minus(p,1)), minus(0,1), p)", "premises": ["prime(p)"]}
+{"id": "C118", "statement": "gcd(a,b) = gcd(b, a mod b)", "goal": "equals(gcd(a,b), gcd(b, mod(a,b)))", "premises": ["gt(b, 0)"]}
+{"id": "C119", "statement": "欧几里得算法终止", "goal": "exists(n, equals(gcd_iter(a, b, n), gcd(a, b)))", "premises": ["gt(a, 0)", "gt(b, 0)"]}
+{"id": "C120", "statement": "素数无穷多", "goal": "forall(N, exists(p, and(prime(p), gt(p, N))))", "premises": []}

@@ -1,0 +1,123 @@
+{
+  "concept_neurons": {
+    "NEURON::S::not<-elliptic_curve::arity=1": {
+      "neuron_id": "NEURON::S::not<-elliptic_curve::arity=1",
+      "type": "single",
+      "lower": [
+        [
+          "elliptic_curve",
+          [
+            "E"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "not",
+        [
+          "equals(discriminant_ec(E), 0)"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::finitely_generated<-elliptic_curve::arity=1": {
+      "neuron_id": "NEURON::S::finitely_generated<-elliptic_curve::arity=1",
+      "type": "single",
+      "lower": [
+        [
+          "elliptic_curve",
+          [
+            "E"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "finitely_generated",
+        [
+          "ec_points(E)"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::le<-elliptic_curve::arity=2": {
+      "neuron_id": "NEURON::S::le<-elliptic_curve::arity=2",
+      "type": "single",
+      "lower": [
+        [
+          "elliptic_curve",
+          [
+            "E"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "le",
+        [
+          "abs(minus(count_points(E,p), plus(p,1)))",
+          "times(2, sqrt(p))"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::equals<-elliptic_curve::arity=2": {
+      "neuron_id": "NEURON::S::equals<-elliptic_curve::arity=2",
+      "type": "single",
+      "lower": [
+        [
+          "elliptic_curve",
+          [
+            "E"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "equals",
+        [
+          "add_ec(add_ec(P,Q),R)",
+          "add_ec(P,add_ec(Q,R))"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::equals<-elliptic_curve::arity=2::identity": {
+      "neuron_id": "NEURON::S::equals<-elliptic_curve::arity=2::identity",
+      "type": "single",
+      "lower": [
+        [
+          "elliptic_curve",
+          [
+            "E"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "equals",
+        [
+          "add_ec(P,infinity)",
+          "P"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    }
+  },
+  "neuron_edges": {}
+}

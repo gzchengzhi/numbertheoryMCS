@@ -13,12 +13,27 @@ from adaptive_store import AdaptiveStore
 
 class AdaptiveProver:
     def __init__(self, store: AdaptiveStore, max_rounds: int = 1,
-                 base_top_k: Optional[int] = None):
+                 base_top_k: Optional[int] = None,
+                 max_depth: int = 12, max_nodes: Optional[int] = None,      # ★ 新增
+                 max_steps: int = 10, working_memory=None,
+                 probe=None):                           # ★ 新增
         self.store = store
-        self.max_rounds = max_rounds       # ★ 默认 1，只跑一轮
-        self.base_top_k = base_top_k        # ★ 默认 None，返回全部
+        self.max_rounds = max_rounds
+        self.base_top_k = base_top_k
+        self.max_nodes = max_nodes
+        self.max_depth = max_depth
+        self.max_steps = max_steps
+        from probe import NoopProbe
+        self.probe = probe or NoopProbe()
+        from working_memory import NoopWorkingMemory
+        self.working_memory = working_memory or NoopWorkingMemory()
+
         
     def _try_sympy(self, goal):
+        
+        # ★ 13.0.5: exists(x, P(x)) 的构造性验证
+        if goal.name == "exists":
+            return self._try_sympy_exists_constructive(goal)
         """尝试直接用 sympy 解决目标"""
         from sympy_bridge import to_sympy
         import sympy
@@ -40,6 +55,50 @@ class AdaptiveProver:
             if bool(result) is True:
                 return True
             return False
+        except Exception:
+            return False
+        
+    def _try_sympy_exists_constructive(self, goal):
+        if len(goal.args) != 2:
+            return False
+        var, body = goal.args
+        # 从 concept_neurons 找 construct
+        construct = None
+        for nid, n in self.store.concept_neurons.items():
+            hp = n.get("head_pattern")
+            if hp and isinstance(hp, (list, tuple)) and hp[0] == "exists":
+                c = n.get("construct")
+                if c and var.name in c:
+                    construct = c
+                    break
+        if construct is None:
+            return False
+        try:
+            import sympy
+            from sympy_bridge import to_sympy
+            from numtheory_prover import parse_term, substitute
+            # 用 construct 的 m,n 代入 body
+            subst = {}
+            for k, expr_str in construct.items():
+                subst[Var(k)] = parse_term(expr_str)
+            # 只验证 body 里的 equals（代数恒等式）
+            body_subst = substitute(body, subst)
+            # 递归找 equals
+            def check_equals(pred):
+                if pred.name == "equals":
+                    lhs = to_sympy(pred.args[0], self.store)
+                    rhs = to_sympy(pred.args[1], self.store)
+                    if lhs is None or rhs is None:
+                        return None
+                    return sympy.simplify(lhs - rhs) == 0
+                if hasattr(pred, "args"):
+                    for a in pred.args:
+                        if type(a).__name__ == "Pred":
+                            r = check_equals(a)
+                            if r is not None:
+                                return r
+                return None
+            return check_equals(body_subst) is True
         except Exception:
             return False
 
@@ -88,13 +147,63 @@ class AdaptiveProver:
             return 'induction'
         
         # 4. 默认使用 direct
-        return 'direct'                    
+        return 'direct'   
 
-    def prove(self, goal_str: str, strategy: str = "auto",
+    def prove(self, goal_str, strategy="auto", var=None, premises=None, verbose=True):
+        # ★ 1. 先 parse_goal，保留 10.0 的 None 检查
+        goal = parse_goal(goal_str)
+        if goal is None:
+            if verbose:
+                print(f"无法解析: {goal_str}")
+            return None
+    
+        # ★ 2. probe.start（原逻辑）
+        self.probe.start(strategy or "auto")
+    
+        # ★ 3. 策略选择 + induction 降级
+        if strategy == "auto":
+            strategy = self._choose_strategy(goal)
+            if strategy == "induction" and var is None:
+                strategy = "direct"       # 无 var 时降级，修 ValueError
+    
+        # ★ 4. WM 构造（PR3 已落盘的逻辑，保留）
+        from working_memory import WorkingMemory, NoopWorkingMemory, extract_topic
+        if not isinstance(self.working_memory, NoopWorkingMemory):
+            topic, terms = extract_topic(goal)
+            wm = WorkingMemory(topic, terms)
+            wm.bind_lookup(lambda nid: self.store.concept_neurons.get(nid))
+            self._active_wm = wm
+        else:
+            self._active_wm = self.working_memory
+    
+        # ★ 5. 包 _prove_inner，统一 finish
+        success, reason = False, ""
+        try:
+            result = self._prove_inner(goal_str, strategy, var, premises, verbose)
+            success = result is not None
+            reason = "ok" if success else "no_proof"
+            return result
+        except Exception as ex:
+            reason = f"error: {ex!r}"
+            raise
+        finally:
+            self.probe.finish(success, fell_back=not success, reason=reason)
+
+    def _prove_inner(self, goal_str: str, strategy: str = "auto",
               var: Optional[Var] = None,
               premises: Optional[List[str]] = None,
               verbose: bool = True) -> Optional[List[ProofStep]]:
         goal = parse_goal(goal_str)
+        # ★ 主题指导法：为本次证明构造 WM（仅当调用方启用了 WM）
+        from working_memory import WorkingMemory, NoopWorkingMemory, extract_topic
+        if not isinstance(self.working_memory, NoopWorkingMemory):
+            topic, terms = extract_topic(goal)
+            wm = WorkingMemory(topic, terms)
+            wm.bind_lookup(lambda nid: self.store.concept_neurons.get(nid))
+            self._active_wm = wm
+        else:
+            self._active_wm = self.working_memory
+            
         if goal is None:
             if verbose:
                 print(f"无法解析: {goal_str}")
@@ -149,7 +258,9 @@ class AdaptiveProver:
 
         # ★ 快速通道：无 premises 时，先试底层 Prover
         if not premises:
-            prover = Prover(self.store, max_depth=12)
+            prover = Prover(self.store, max_depth=self.max_depth,
+                max_nodes=self.max_nodes, probe=self.probe)
+            prover.max_steps = self.max_steps
             proof = prover.prove(goal, strategy=strategy, var=var, verbose=False)
             if proof is not None:
                 if verbose:
@@ -203,7 +314,9 @@ class AdaptiveProver:
         # ★ 检索阶段：只跑一轮
         proof = None
         try:
-            prover = Prover(self.store, max_depth=12)
+            prover = Prover(self.store, max_depth=self.max_depth,
+                max_nodes=self.max_nodes, probe=self.probe)
+            prover.max_steps = self.max_steps
             proof = prover.prove(goal, strategy=strategy, var=var,
                                  verbose=False)
             if proof:
@@ -296,6 +409,19 @@ class AdaptiveProver:
 
         prem_patterns = [pattern(p) for p in premises]
         goal_pattern = pattern(goal)
+        
+        # ★ WM 过滤：得到与主题相关的神经元 id 集合
+        wm = getattr(self, "_active_wm", None)
+        if wm is not None and wm.topic:
+            related = set()
+            for nid, neuron in self.store.concept_neurons.items():
+                if wm.relevance(neuron) > 0.0:
+                    related.add(nid)
+            if not related:
+                # 主题无相关神经元：直接放弃神经元层，回退链式（不消耗 energy）
+                return None
+        else:
+            related = None   # None = 不过滤（Noop WM）
 
         # 2. 遍历定理，找拓扑结构一致的
         for c in self.store.clauses:
@@ -321,6 +447,9 @@ class AdaptiveProver:
 
             for tri in r['triangles']:
                 nid = tri['neuron']
+                if related is not None and nid not in related:   # ★ WM 过滤
+                    continue
+                
                 if nid in self.store.concept_neurons:
                     step = ProofStep(
                         clause=c,
@@ -354,6 +483,8 @@ def cli():
         store.load_jsonl(p)
     store.load_weights()
     store.load_dependency_records()
+    # adaptive_prover.py cli() 里，load_dependency_records() 之后加
+    store.load_neurons("theorems/concept_neurons.json")
 
     if args.stats:
         print(store.weight_stats())

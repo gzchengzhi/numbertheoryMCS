@@ -1,0 +1,1 @@
+{"id":"C010","statement":"p≡1 mod 4 ⇒ p为两平方和","goal":"exists(x, exists(y, equals(p, plus(power(x,2), power(y,2)))))","premises":["prime(p)","congruent(p, 1, 4)"]}

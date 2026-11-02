@@ -1,0 +1,1 @@
+{"id":"C002","statement":"a≡b, b≡c ⇒ a≡c","goal":"congruent(a, c, m)","premises":["congruent(a, b, m)","congruent(b, c, m)"]}

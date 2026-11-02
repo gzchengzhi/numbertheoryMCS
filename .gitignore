@@ -1,19 +1,34 @@
-# Python 缓存
+# 备份
+.bak/
+*.bak
+*.bak_*
+*.backup
+
+# Python
 __pycache__/
 *.py[cod]
-*$py.class
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
 
-# 运行时生成的数据
+# 数据缓存
 theorem_weights.json
 dependency_records.json
-theorems/learned.jsonl
-theorems/auto_lemmas.jsonl
 
-# 虚拟环境
-venv/
-env/
+# 日志
+logs/
+*.log
 
-# 编辑器配置
+# 临时文件
+tmp/
+temp/
+*.tmp
+
+# IDE
 .vscode/
 .idea/
+*.swp
+
+# 操作系统
 .DS_Store
+Thumbs.db

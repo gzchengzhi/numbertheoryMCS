@@ -1,0 +1,1 @@
+{"id":"COMP-C096","name":"勾股数参数化","category":"竞赛基础","head":"exists(m, exists(n, and(gt(m,n), coprime(m,n), equals(a, minus(power(m,2),power(n,2))), equals(b, times(2,times(m,n))), equals(c, plus(power(m,2),power(n,2))))))","body":["equals(plus(power(a,2),power(b,2)), power(c,2))","gt(a,0)","gt(b,0)","gt(c,0)"]}

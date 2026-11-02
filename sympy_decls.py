@@ -96,4 +96,8 @@ SYMPY_DECLS = {
         "translate": "lambda a, b: sympy.Le(a, b)",
         "custom_funcs": {},
     },
+    "odd": {
+        "predicate": "odd",
+        "sympy": "lambda n: sympy.Integer(n).is_odd if n.is_Integer else None",
+    },
 }

@@ -1,61 +1,88 @@
-# numbertheoryMCS v10.0 - 数论定理自动证明系统
+# numbertheoryMCS
 
-> 基于 Cheng 2012《微型汉语系统的构建》与 Cheng 2019《认知发展理论》第 8 章“形式运算”构建的认知启发式定理证明器。
+微型汉语系统（Micro Chinese System, MCS）的数论自动证明实现。
 
-## 🌟 10.0 核心架构：双引擎认知证明
+## 理论来源
 
-在 10.0 版本中，系统实现了从“ATP 穷举”向“形式运算认知”的跃迁，引入了双引擎驱动架构：
+- Cheng, Z. (2012). 微型汉语系统的构建及汉语文章的自动生成. 广州大学.
+- Cheng, Z. (2019). 认知发展理论: 第 8 章 形式运算.
 
-1. **物理层 / 直觉计算层（SymPy 计算引擎）**
-   - **机制**：利用 SymPy 强大的代数运算能力，直接判定 `prime`、`irrational`、`divides` 等谓词。
-   - **认知映射**：对应人脑的“直觉/心算”。能量消耗最低，遇到如“证明 \(\sqrt{1087}\) 是无理数”等题目可**秒出结果**。
-2. **规则层 / 形式运算层（概念神经元引擎）**
-   - **机制**：自动从定理库中提取“概念三角形”（`A + B → C`），构建包含 `transitive`（传递型）、`single`（变体型）、`shared_param`（共享参数型）的全互联概念神经元网络。
-   - **认知映射**：对应形式运算阶段的“图式”（Schema）。当遇到匹配的底层模式时，直接激活上层神经元一步得出答案，无需回溯搜索。
+## 核心能力
 
-当上述两层均无法直接解决时，系统会自动回退到 9.0 的“链式检索推理”层，形成平滑的认知降级。
+- **图式层**：概念三角形（A+B→C）的直接点火
+- **递归点火**：上层概念的逐层递归（`@0-@0` → `@0-@1`）
+- **同构迁移**：跨谓词的图式迁移（`divides` ↔ `congruent`）
+- **多域架构**：数论 + Dirichlet 特征 + 椭圆曲线
+- **自动学习**：`discover` + `judge` + `commit`
+- **假阳性防御**：`Prover` substitution 一致性
 
-## 🧠 已验证的认知案例
+## 当前基线
 
-在 Web 界面（`app.py`）中，我们提供了几个典型题目供体验：
+| 指标 | 值 |
+|---|---|
+| 竞赛题 bench | **120/120 (100%)** |
+| 回归测试 | **120 passed** |
+| 域测试 | **10 passed** |
+| 总神经元 | 223（主库 213 + 域 10） |
 
-- **计算直觉**：`证明根号1087是无理数` -> 系统直接调用 SymPy 的 `ask(Q.irrational)` 瞬发判定。
-- **概念激活**：`若 a≡b (mod m) 且 b≡c (mod m)，证明 a≡c (mod m)` -> 系统提取前提的“拓扑骨架”，直接激活 `NEURON::T::congruent::@0-@1` 神经元。
-- **跨谓词组合**：`证明 n! 可以整除 n 个连续正整数的乘积` -> 系统通过神经元与定理库的配合，完成跨概念的依赖链推导。
-- **证伪能力**：`证明 2047 是素数` -> SymPy 直接返回 False（注：2047=23×89）。
+## 运行竞赛题批量测试
+bash
+python tools/bench_competition.py
+预期：120/120 (100%)。
 
-## 📂 核心模块说明
+## 运行回归测试
+bash
+pytest tests/regression/test_12_bench.py -q
+pytest tests/domains/ -q
+预期：120 passed + 10 passed。
 
-- `concept_triangle.py`：概念三角形的提取器。将 Horn 子句转换为 `A+B→C` 的结构，识别中介变量与共享参数。
-- `sympy_bridge.py`：符号计算桥接器。将形式化谓词动态翻译为 SymPy 表达式。
-- `adaptive_store.py`：自适应定理库。负责神经元网络的持久化（`concept_neurons.json`）与拓扑激活。
-- `adaptive_prover.py`：注意力路由器。根据目标特征动态分配 `sympy`、`neuron` 或 `contradiction` 策略。
+## 目录结构
+text
+├── theorems/               # 定理库（15 主文件 + 12_0_competition.jsonl + concept_neurons.json）
+├── domains/                # 概念域（dirichlet + elliptic）
+├── data/iso_edges.json     # 同构边
+├── tests/                  # 测试
+│   ├── regression/         # 回归
+│   ├── bench/competition/  # 120 题
+│   └── domains/            # 域测试
+├── tools/                  # 工具脚本
+├── docs/                   # 文档
+└── *.py                    # 核心源码
+## 核心源码
+文件	作用
+numtheory_prover.py	数论定理证明器（Prover、Pred、HornClause）
+theorem_store.py	定理库存储
+adaptive_store.py	自适应存储（神经元、共现、依赖）
+adaptive_prover.py	自适应证明器（图式激活、链式回退）
+recursive_prover.py	递归点火 + 同构迁移
+concept_domain.py	概念域注册（ConceptDomain + DomainRegistry）
+concept_triangle.py	概念三角形（extract_triangles）
+working_memory.py	主题指导法
+probe.py	可观测性
+symbolic.py	符号不等式
+sympy_bridge.py	sympy 翻译
+sympy_decls.py	sympy 谓词声明
+arithmetic_engine.py	计算引擎
+## 理论对应
+实现	Cheng 2019 §8
+概念三角形	§8.2.4 概念三角形
+递归点火	§8.2.4 上层概念逐层形成
+同构迁移	§8.2.4 重合三角形
+energy = 2^(N-1)·δ	§8.5.1 认知与能量消耗
+WorkingMemory	§8.5.2 主题指导法
+## 开发历程
+版本	pass/120	关键
+12.0	36/50 (72%)	基础图式
+12.5	79/80 (98.75%)	二次剩余/完全数/无理数
+12.10	107 (89.2%)	Wilson/二项式/Lucas
+13.0.2	109 (90.8%)	C028 + C111
+13.0.3	114 (95%)	Dirichlet
+13.0.4	119 (99.2%)	椭圆曲线
+13.0.5	120/120 (100%)	C096（扁平 and）
 
-## 🚀 快速开始
+## 快速开始
 
+### 安装依赖
 
-# 1. 安装依赖
-pip install flask sympy
-
-# 2. 启动本地 LLM (Qwen) 服务 (可选，用于自然语言输入)
-# 默认监听 127.0.0.1:8080
-
-# 3. 启动 Web 界面
-python app.py
-打开浏览器访问 http://127.0.0.1:5000，即可体验基于认知理论的概念神经元网络。
-
-📝 版本说明
-8.0：Horn 子句证明器，符号不等式，计算引擎。
-
-9.0：全互联网络，概念多边形，链式依赖发现，检索层主导。
-
-10.0：概念神经元提取与持久化，SymPy 计算双引擎，注意力策略路由（当前版本）。
-
-
-### 下一步展望
-
-10.0 发布后，系统已经具备了极高的可解释性和扩展性。未来的研究方向可能包括：
-
-1. **跨领域同构**：实现 `NEURON::T::congruent` 到 `NEURON::T::divides` 的“结构同构”边，让系统无需学习就能“触类旁通”。
-2. **递归激活与工作记忆区**：解决多层嵌套（链长 5、7）的神经元直接推导。
-3. **规则 vs 事实分层**：彻底打通 Horn 子句与概念三角形的边界。
+```bash
+pip install -r requirements.txt

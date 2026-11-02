@@ -1,0 +1,2 @@
+{"id":"C008","statement":"欧拉定理","goal":"congruent(power(a, phi(m)), 1, m)","premises":["coprime(a, m)","gt(m, 1)"]}
+

@@ -1,0 +1,1 @@
+{"id":"C001","statement":"a|b, b|c ⇒ a|c","goal":"divides(a, c)","premises":["divides(a, b)","divides(b, c)"]}

@@ -1,0 +1,89 @@
+{
+  "version": "1.0",
+  "edges": [
+    {
+      "id": "ISO::T::divides::@0-@1::arity=2::T::congruent::@0-@1::arity=3",
+      "src": "NEURON::T::divides::@0-@1::arity=2",
+      "dst": "NEURON::T::congruent::@0-@1::arity=3",
+      "kind": "structural",
+      "direction": "bi_directional",
+      "mapping": {
+        "predicate_map": { "divides": "congruent" },
+        "param_map": { "a": "a", "b": "b", "c": "c", "m": "_implicit_mod" },
+        "lower_map": [
+          {
+            "src": ["divides", ["m", "minus(a,b)"]],
+            "dst": ["congruent", ["a", "b", "m"]]
+          },
+          {
+            "src": ["divides", ["m", "minus(b,c)"]],
+            "dst": ["congruent", ["b", "c", "m"]]
+          }
+        ],
+        "domain_guard": ["m > 0", "a≡b mod m ⟺ m|(a-b)"]
+      },
+      "verify": {
+        "method": "sympy_equiv",
+        "test_ref": "tests/iso/test_transitive_divides_congruent.py"
+      },
+      "confidence": 0.9,
+      "provenance": "手工标注 2026-10-22；两者都是传递型 T，拓扑骨架同构；congruent 多一个模数参数"
+    },
+    {
+      "id": "ISO::SP::divides<-divides+divides::arity=2::SP::congruent<-congruent+congruent::arity=3",
+      "src": "NEURON::SP::divides<-divides+divides::arity=2",
+      "dst": "NEURON::SP::congruent<-congruent+congruent::arity=3",
+      "kind": "structural",
+      "direction": "bi_directional",
+      "mapping": {
+        "predicate_map": { "divides": "congruent" },
+        "param_map": { "a": "a", "b": "b", "c": "c", "d": "c", "m": "_implicit_mod" },
+        "lower_map": [
+          {
+            "src": ["divides", ["a", "b"]],
+            "dst": ["congruent", ["a", "b", "m"]]
+          },
+          {
+            "src": ["divides", ["a", "c"]],
+            "dst": ["congruent", ["c", "d", "m"]]
+          }
+        ],
+        "domain_guard": ["m > 0", "divides(a,b) ∧ divides(a,c) ⟺ congruent(a,b,m) ∧ congruent(c,d,m)（共享 anchor a，m 为隐式）"]
+      },
+      "verify": {
+        "method": "sympy_equiv",
+        "test_ref": "tests/iso/test_sp_divides_congruent.py"
+      },
+      "confidence": 0.85,
+      "provenance": "手工标注 2026-10-22；共享参数型 SP，拓扑同构"
+    },
+    {
+      "id": "ISO::T::congruent::@0-@0::arity=3::T::equals::@0-@0::arity=2",
+      "src": "NEURON::T::congruent::@0-@0::arity=3",
+      "dst": "NEURON::T::equals::@0-@0::arity=2",
+      "kind": "semantic",
+      "direction": "one_way",
+      "mapping": {
+        "predicate_map": { "congruent": "equals" },
+        "param_map": { "a": "a", "c": "c", "m": "b", "b": "_quotient_param" },
+        "lower_map": [
+          {
+            "src": ["divides", ["c", "a"]],
+            "dst": ["equals", ["a", "plus(times(b,q1),r1)"]]
+          },
+          {
+            "src": ["divides", ["c", "b"]],
+            "dst": ["equals", ["a", "plus(times(b,q2),r2)"]]
+          }
+        ],
+        "domain_guard": ["m > 0", "语义同构，仅 WM 共激活，不自动迁移"]
+      },
+      "verify": {
+        "method": "manual_proof_ref",
+        "proof_ref": "docs/proofs/congruent_to_equals_quotient.md"
+      },
+      "confidence": 0.6,
+      "provenance": "手工标注 2026-10-22；语义同构，仅作 WM 共激活扩展"
+    }
+  ]
+}

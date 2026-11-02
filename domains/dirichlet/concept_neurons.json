@@ -1,0 +1,150 @@
+{
+  "concept_neurons": {
+    "NEURON::S::equals<-dirichlet_character::arity=1": {
+      "neuron_id": "NEURON::S::equals<-dirichlet_character::arity=1",
+      "type": "single",
+      "lower": [
+        [
+          "dirichlet_character",
+          [
+            "chi",
+            "m"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "equals",
+        [
+          "chi(1)",
+          "1"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::equals<-dirichlet_character::arity=1::multiplicative": {
+      "neuron_id": "NEURON::S::equals<-dirichlet_character::arity=1::multiplicative",
+      "type": "single",
+      "lower": [
+        [
+          "dirichlet_character",
+          [
+            "chi",
+            "m"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "equals",
+        [
+          "chi(times(a,b))",
+          "times(chi(a), chi(b))"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::SP::equals<-dirichlet_character+gt::arity=1": {
+      "neuron_id": "NEURON::SP::equals<-dirichlet_character+gt::arity=1",
+      "type": "shared_param",
+      "lower": [
+        [
+          "dirichlet_character",
+          [
+            "chi",
+            "m"
+          ]
+        ],
+        [
+          "gt",
+          [
+            "gcd(a,m)",
+            "1"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": "m",
+      "head_pattern": [
+        "equals",
+        [
+          "chi(a)",
+          "0"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::SP::equals<-dirichlet_character+not_principal::arity=1": {
+      "neuron_id": "NEURON::SP::equals<-dirichlet_character+not_principal::arity=1",
+      "type": "shared_param",
+      "lower": [
+        [
+          "dirichlet_character",
+          [
+            "chi",
+            "m"
+          ]
+        ],
+        [
+          "not",
+          [
+            "is_principal_character(chi)"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": "m",
+      "head_pattern": [
+        "equals",
+        [
+          "sum(a,1,m,chi(a))",
+          "0"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::forall<-coprime+gt::arity=1": {
+      "neuron_id": "NEURON::S::forall<-coprime+gt::arity=1",
+      "type": "single",
+      "lower": [
+        [
+          "coprime",
+          [
+            "a",
+            "m"
+          ]
+        ],
+        [
+          "gt",
+          [
+            "m",
+            "1"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "forall",
+        [
+          "N",
+          "exists(p, and(prime(p), and(gt(p,N), congruent(p,a,m))))"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    }
+  },
+  "neuron_edges": {}
+}

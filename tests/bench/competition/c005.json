@@ -1,0 +1,1 @@
+{"id":"C005","statement":"同余可乘","goal":"congruent(times(a,c), times(b,d), m)","premises":["congruent(a, b, m)","congruent(c, d, m)"]}

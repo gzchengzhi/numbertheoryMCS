@@ -291,95 +291,15 @@
       ],
       "mediator": null,
       "anchor": null,
-      "head_pattern": null,
+      "head_pattern": [
+        "irrational",
+        [
+          "sqrt(p)"
+        ]
+      ],
       "N": 1,
       "weight": 1.0,
-      "instances": [
-        {
-          "source_clause": "T018",
-          "lower": [
-            [
-              "prime",
-              [
-                "p"
-              ]
-            ]
-          ],
-          "mediator": null,
-          "anchor": null,
-          "N": 1
-        },
-        {
-          "source_clause": "T018",
-          "lower": [
-            [
-              "prime",
-              [
-                "p"
-              ]
-            ]
-          ],
-          "mediator": null,
-          "anchor": null,
-          "N": 1
-        },
-        {
-          "source_clause": "T018_POW",
-          "lower": [
-            [
-              "prime",
-              [
-                "p"
-              ]
-            ]
-          ],
-          "mediator": null,
-          "anchor": null,
-          "N": 1
-        },
-        {
-          "source_clause": "T018_POW",
-          "lower": [
-            [
-              "prime",
-              [
-                "p"
-              ]
-            ]
-          ],
-          "mediator": null,
-          "anchor": null,
-          "N": 1
-        },
-        {
-          "source_clause": "T019",
-          "lower": [
-            [
-              "prime",
-              [
-                "2"
-              ]
-            ]
-          ],
-          "mediator": null,
-          "anchor": null,
-          "N": 1
-        },
-        {
-          "source_clause": "T019",
-          "lower": [
-            [
-              "prime",
-              [
-                "2"
-              ]
-            ]
-          ],
-          "mediator": null,
-          "anchor": null,
-          "N": 1
-        }
-      ]
+      "instances": []
     },
     "NEURON::S::divides<-divides::arity=2": {
       "neuron_id": "NEURON::S::divides<-divides::arity=2",
@@ -737,56 +657,6 @@
                 "a",
                 "b",
                 "m"
-              ]
-            ]
-          ],
-          "mediator": null,
-          "anchor": null,
-          "N": 1
-        }
-      ]
-    },
-    "NEURON::S::pythagorean<-exists::arity=3": {
-      "neuron_id": "NEURON::S::pythagorean<-exists::arity=3",
-      "type": "single",
-      "lower": [
-        [
-          "exists",
-          [
-            "mn",
-            "and(gt(m,n),equals(gcd(m,n),1),equals(a,minus(times(m,m),times(n,n))),equals(b,times(2,times(m,n))),equals(c,plus(times(m,m),times(n,n))))"
-          ]
-        ]
-      ],
-      "mediator": null,
-      "anchor": null,
-      "head_pattern": null,
-      "N": 1,
-      "weight": 1.0,
-      "instances": [
-        {
-          "source_clause": "T046",
-          "lower": [
-            [
-              "exists",
-              [
-                "mn",
-                "and(gt(m,n),equals(gcd(m,n),1),equals(a,minus(times(m,m),times(n,n))),equals(b,times(2,times(m,n))),equals(c,plus(times(m,m),times(n,n))))"
-              ]
-            ]
-          ],
-          "mediator": null,
-          "anchor": null,
-          "N": 1
-        },
-        {
-          "source_clause": "T046",
-          "lower": [
-            [
-              "exists",
-              [
-                "mn",
-                "and(gt(m,n),equals(gcd(m,n),1),equals(a,minus(times(m,m),times(n,n))),equals(b,times(2,times(m,n))),equals(c,plus(times(m,m),times(n,n))))"
               ]
             ]
           ],
@@ -9404,8 +9274,6 @@
       ]
     },
     "NEURON::SP::quadratic_residue<-quadratic_residue+quadratic_residue::arity=2": {
-      "neuron_id": "NEURON::SP::quadratic_residue<-quadratic_residue+quadratic_residue::arity=2",
-      "type": "shared_param",
       "lower": [
         [
           "quadratic_residue",
@@ -9422,56 +9290,12 @@
           ]
         ]
       ],
-      "mediator": null,
-      "anchor": "p",
-      "head_pattern": null,
-      "N": 1,
-      "weight": 1.0,
-      "instances": [
-        {
-          "source_clause": "M7-012",
-          "lower": [
-            [
-              "quadratic_residue",
-              [
-                "a",
-                "p"
-              ]
-            ],
-            [
-              "quadratic_residue",
-              [
-                "b",
-                "p"
-              ]
-            ]
-          ],
-          "mediator": null,
-          "anchor": "p",
-          "N": 1
-        },
-        {
-          "source_clause": "M7-012",
-          "lower": [
-            [
-              "quadratic_residue",
-              [
-                "a",
-                "p"
-              ]
-            ],
-            [
-              "quadratic_residue",
-              [
-                "b",
-                "p"
-              ]
-            ]
-          ],
-          "mediator": null,
-          "anchor": "p",
-          "N": 1
-        }
+      "head_pattern": [
+        "quadratic_residue",
+        [
+          "times(a,b)",
+          "p"
+        ]
       ]
     },
     "NEURON::S::quadratic_residue<-quadratic_residue::arity=2": {
@@ -11472,6 +11296,1516 @@
           "N": 1
         }
       ]
+    },
+    "NEURON::S::congruent<-prime+gt::arity=3": {
+      "neuron_id": "NEURON::S::congruent<-prime+gt::arity=3",
+      "type": "single",
+      "lower": [
+        [
+          "prime",
+          [
+            "p"
+          ]
+        ],
+        [
+          "gt",
+          [
+            "p",
+            "3"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "congruent",
+        [
+          "power(p,2)",
+          "1",
+          "24"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": [
+        {
+          "source_clause": "COMP-077",
+          "lower": [
+            [
+              "prime",
+              [
+                "p"
+              ]
+            ],
+            [
+              "gt",
+              [
+                "p",
+                "3"
+              ]
+            ]
+          ],
+          "mediator": null,
+          "anchor": null,
+          "N": 1
+        }
+      ]
+    },
+    "NEURON::SP::congruent<-coprime+gt::arity=3": {
+      "neuron_id": "NEURON::SP::congruent<-coprime+gt::arity=3",
+      "type": "shared_param",
+      "lower": [
+        [
+          "coprime",
+          [
+            "a",
+            "m"
+          ]
+        ],
+        [
+          "gt",
+          [
+            "m",
+            "1"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": "m",
+      "head_pattern": [
+        "congruent",
+        [
+          "power(a,phi(m))",
+          "1",
+          "m"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": [
+        {
+          "source_clause": "COMP-076",
+          "lower": [
+            [
+              "prime",
+              [
+                "p"
+              ]
+            ],
+            [
+              "gt",
+              [
+                "p",
+                "3"
+              ]
+            ]
+          ],
+          "mediator": null,
+          "anchor": null,
+          "N": 1
+        }
+      ]
+    },
+    "NEURON::SP::divides<-divides+divides::arity=2::product": {
+      "neuron_id": "NEURON::SP::divides<-divides+divides::arity=2::product",
+      "type": "shared_param",
+      "lower": [
+        [
+          "divides",
+          [
+            "a",
+            "b"
+          ]
+        ],
+        [
+          "divides",
+          [
+            "c",
+            "d"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "divides",
+        [
+          "times(a,c)",
+          "times(b,d)"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": [
+        {
+          "source_clause": "COMP-078",
+          "lower": [
+            [
+              "divides",
+              [
+                "a",
+                "b"
+              ]
+            ],
+            [
+              "divides",
+              [
+                "c",
+                "d"
+              ]
+            ]
+          ],
+          "mediator": null,
+          "anchor": null,
+          "N": 1
+        }
+      ]
+    },
+    "NEURON::S::congruent<-congruent::arity=3::power_no_ge": {
+      "neuron_id": "NEURON::S::congruent<-congruent::arity=3::power_no_ge",
+      "type": "single",
+      "lower": [
+        [
+          "congruent",
+          [
+            "a",
+            "b",
+            "m"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "congruent",
+        [
+          "power(a,k)",
+          "power(b,k)",
+          "m"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::equals<-congruent::arity=2::gcd": {
+      "neuron_id": "NEURON::S::equals<-congruent::arity=2::gcd",
+      "type": "single",
+      "lower": [
+        [
+          "congruent",
+          [
+            "a",
+            "b",
+            "m"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "equals",
+        [
+          "gcd(a,m)",
+          "gcd(b,m)"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": [
+        {
+          "source_clause": "COMP-080",
+          "lower": [
+            [
+              "congruent",
+              [
+                "a",
+                "b",
+                "m"
+              ]
+            ]
+          ],
+          "mediator": null,
+          "anchor": null,
+          "N": 1
+        }
+      ]
+    },
+    "NEURON::S::exists<-prime+congruent::arity=1": {
+      "neuron_id": "NEURON::S::exists<-prime+congruent::arity=1",
+      "type": "single",
+      "lower": [
+        [
+          "prime",
+          [
+            "p"
+          ]
+        ],
+        [
+          "congruent",
+          [
+            "p",
+            "1",
+            "4"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "exists",
+        [
+          "x",
+          "exists(y, equals(p, plus(power(x,2), power(y,2))))"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::or<-prime+divides+gt::arity=2": {
+      "neuron_id": "NEURON::S::or<-prime+divides+gt::arity=2",
+      "type": "single",
+      "lower": [
+        [
+          "prime",
+          [
+            "p"
+          ]
+        ],
+        [
+          "divides",
+          [
+            "d",
+            "p"
+          ]
+        ],
+        [
+          "gt",
+          [
+            "d",
+            "0"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "or",
+        [
+          "equals(d,1)",
+          "equals(d,p)"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::not<-prime::arity=1": {
+      "neuron_id": "NEURON::S::not<-prime::arity=1",
+      "type": "single",
+      "lower": [
+        [
+          "prime",
+          [
+            "p"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "not",
+        [
+          "exists(d, and(gt(d,1), and(lt(d,p), divides(d,p))))"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::exists<-gt+not_prime::arity=1": {
+      "neuron_id": "NEURON::S::exists<-gt+not_prime::arity=1",
+      "type": "single",
+      "lower": [
+        [
+          "gt",
+          [
+            "n",
+            "1"
+          ]
+        ],
+        [
+          "not_prime",
+          [
+            "n"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "exists",
+        [
+          "p",
+          "and(prime(p), divides(p,n))"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::congruent<-congruent::arity=3::add_same": {
+      "neuron_id": "NEURON::S::congruent<-congruent::arity=3::add_same",
+      "type": "single",
+      "lower": [
+        [
+          "congruent",
+          [
+            "a",
+            "b",
+            "m"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "congruent",
+        [
+          "plus(a,c)",
+          "plus(b,c)",
+          "m"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::not_prime<-prime::arity=1": {
+      "neuron_id": "NEURON::S::not_prime<-prime::arity=1",
+      "type": "single",
+      "lower": [
+        [
+          "prime",
+          [
+            "p"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "not_prime",
+        [
+          "power(p,2)"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::equals<-divides::arity=2::gcd_a": {
+      "neuron_id": "NEURON::S::equals<-divides::arity=2::gcd_a",
+      "type": "single",
+      "lower": [
+        [
+          "divides",
+          [
+            "a",
+            "b"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "equals",
+        [
+          "gcd(a,b)",
+          "a"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::congruent<-odd::arity=2": {
+      "neuron_id": "NEURON::S::congruent<-odd::arity=2",
+      "type": "single",
+      "lower": [
+        [
+          "odd",
+          [
+            "n"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "congruent",
+        [
+          "power(n,2)",
+          "1",
+          "8"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::congruent<-prime+not_divides::arity=3": {
+      "neuron_id": "NEURON::S::congruent<-prime+not_divides::arity=3",
+      "type": "single",
+      "lower": [
+        [
+          "prime",
+          [
+            "p"
+          ]
+        ],
+        [
+          "not_divides",
+          [
+            "p",
+            "a"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "congruent",
+        [
+          "power(a, minus(p,1))",
+          "1",
+          "p"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::odd<-prime+gt::arity=1": {
+      "neuron_id": "NEURON::S::odd<-prime+gt::arity=1",
+      "type": "single",
+      "lower": [
+        [
+          "prime",
+          [
+            "p"
+          ]
+        ],
+        [
+          "gt",
+          [
+            "p",
+            "2"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "odd",
+        [
+          "p"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::divides<-gcd::arity=2": {
+      "neuron_id": "NEURON::S::divides<-gcd::arity=2",
+      "type": "single",
+      "lower": [],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "divides",
+        [
+          "gcd(a,b)",
+          "a"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::divides<-gcd::arity=2::b": {
+      "neuron_id": "NEURON::S::divides<-gcd::arity=2::b",
+      "type": "single",
+      "lower": [],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "divides",
+        [
+          "gcd(a,b)",
+          "b"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::exists<-perfect+even::arity=1": {
+      "lower": [
+        [
+          "perfect",
+          [
+            "n"
+          ]
+        ],
+        [
+          "even",
+          [
+            "n"
+          ]
+        ]
+      ],
+      "head_pattern": [
+        "exists",
+        [
+          "p",
+          "and(prime(p), equals(n, times(power(2,minus(p,1)), minus(power(2,p),1))))"
+        ]
+      ]
+    },
+    "NEURON::S::equals<-perfect::arity=2": {
+      "lower": [
+        [
+          "perfect",
+          [
+            "n"
+          ]
+        ]
+      ],
+      "head_pattern": [
+        "equals",
+        [
+          "sigma(n)",
+          "times(2,n)"
+        ]
+      ]
+    },
+    "NEURON::SP::perfect<-prime::arity=1": {
+      "lower": [
+        [
+          "prime",
+          [
+            "p"
+          ]
+        ],
+        [
+          "prime",
+          [
+            "minus(power(2,p),1)"
+          ]
+        ]
+      ],
+      "head_pattern": [
+        "perfect",
+        [
+          "times(power(2,minus(p,1)), minus(power(2,p),1))"
+        ]
+      ]
+    },
+    "NEURON::S::prime<-perfect::arity=1": {
+      "lower": [
+        [
+          "perfect",
+          [
+            "times(power(2,minus(p,1)), minus(power(2,p),1))"
+          ]
+        ]
+      ],
+      "head_pattern": [
+        "prime",
+        [
+          "minus(power(2,p),1)"
+        ]
+      ]
+    },
+    "NEURON::SP::not<-quadratic_residue+not_quadratic_residue::arity=1": {
+      "lower": [
+        [
+          "quadratic_residue",
+          [
+            "a",
+            "p"
+          ]
+        ],
+        [
+          "not",
+          [
+            "quadratic_residue(b,p)"
+          ]
+        ]
+      ],
+      "head_pattern": [
+        "not",
+        [
+          "quadratic_residue(times(a,b), p)"
+        ]
+      ]
+    },
+    "NEURON::S::exists<-rational::arity=1": {
+      "lower": [
+        [
+          "rational",
+          [
+            "sqrt(n)"
+          ]
+        ],
+        [
+          "gt",
+          [
+            "n",
+            "0"
+          ]
+        ]
+      ],
+      "head_pattern": [
+        "exists",
+        [
+          "k",
+          "equals(n, power(k,2))"
+        ]
+      ]
+    },
+    "NEURON::SP::divides<-ord+prime::arity=2": {
+      "lower": [
+        [
+          "prime",
+          [
+            "p"
+          ]
+        ],
+        [
+          "coprime",
+          [
+            "a",
+            "p"
+          ]
+        ]
+      ],
+      "head_pattern": [
+        "divides",
+        [
+          "ord(a,p)",
+          "minus(p,1)"
+        ]
+      ]
+    },
+    "NEURON::SP::exists<-odd+gt+not_prime::arity=1": {
+      "lower": [
+        [
+          "odd",
+          [
+            "n"
+          ]
+        ],
+        [
+          "gt",
+          [
+            "n",
+            "1"
+          ]
+        ],
+        [
+          "not_prime",
+          [
+            "n"
+          ]
+        ]
+      ],
+      "head_pattern": [
+        "exists",
+        [
+          "p",
+          "and(prime(p), and(odd(p), divides(p,n)))"
+        ]
+      ]
+    },
+    "NEURON::SP::congruent<-prime+quadratic_residue::arity=3": {
+      "lower": [
+        [
+          "prime",
+          [
+            "p"
+          ]
+        ],
+        [
+          "quadratic_residue",
+          [
+            "a",
+            "p"
+          ]
+        ]
+      ],
+      "head_pattern": [
+        "congruent",
+        [
+          "power(a, div(minus(p,1),2))",
+          "1",
+          "p"
+        ]
+      ]
+    },
+    "NEURON::SP::divides<-congruent+coprime::arity=2": {
+      "lower": [
+        [
+          "congruent",
+          [
+            "power(a,n)",
+            "1",
+            "m"
+          ]
+        ],
+        [
+          "coprime",
+          [
+            "a",
+            "m"
+          ]
+        ]
+      ],
+      "head_pattern": [
+        "divides",
+        [
+          "ord(a,m)",
+          "n"
+        ]
+      ]
+    },
+    "NEURON::SP::equals<-prime_power_in::arity=3": {
+      "neuron_id": "NEURON::SP::equals<-prime_power_in::arity=3",
+      "type": "shared_param",
+      "lower": [
+        [
+          "prime",
+          [
+            "p"
+          ]
+        ],
+        [
+          "nonzero",
+          [
+            "a"
+          ]
+        ],
+        [
+          "nonzero",
+          [
+            "b"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": "p",
+      "head_pattern": [
+        "equals",
+        [
+          "prime_power_in(times(a,b),p)",
+          "plus(prime_power_in(a,p), prime_power_in(b,p))"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::ge<-prime_power_in::arity=2": {
+      "neuron_id": "NEURON::S::ge<-prime_power_in::arity=2",
+      "type": "single",
+      "lower": [
+        [
+          "prime",
+          [
+            "p"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "ge",
+        [
+          "prime_power_in(plus(a,b),p)",
+          "min(prime_power_in(a,p), prime_power_in(b,p))"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::SP::equals<-prime_power_in::unequal": {
+      "neuron_id": "NEURON::SP::equals<-prime_power_in::unequal",
+      "type": "shared_param",
+      "lower": [
+        [
+          "prime",
+          [
+            "p"
+          ]
+        ],
+        [
+          "not",
+          [
+            "equals(prime_power_in(a,p), prime_power_in(b,p))"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": "p",
+      "head_pattern": [
+        "equals",
+        [
+          "prime_power_in(plus(a,b),p)",
+          "min(prime_power_in(a,p), prime_power_in(b,p))"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::equals<-prime_power_in_factorial": {
+      "neuron_id": "NEURON::S::equals<-prime_power_in_factorial",
+      "type": "single",
+      "lower": [
+        [
+          "prime",
+          [
+            "p"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "equals",
+        [
+          "prime_power_in(factorial(n),p)",
+          "sum(k,1,n,floor(div(n,power(p,k))))"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::SP::equals<-prime_power_in::odd": {
+      "neuron_id": "NEURON::SP::equals<-prime_power_in::odd",
+      "type": "shared_param",
+      "lower": [
+        [
+          "odd",
+          [
+            "n"
+          ]
+        ],
+        [
+          "odd",
+          [
+            "x"
+          ]
+        ],
+        [
+          "odd",
+          [
+            "y"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": "n",
+      "head_pattern": [
+        "equals",
+        [
+          "prime_power_in(minus(power(x,n),power(y,n)),2)",
+          "prime_power_in(minus(x,y),2)"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::exists<-rational_cf::arity=1": {
+      "neuron_id": "NEURON::S::exists<-rational_cf::arity=1",
+      "type": "single",
+      "lower": [
+        [
+          "rational",
+          [
+            "r"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "exists",
+        [
+          "cf",
+          "finite_continued_fraction(cf, r)"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::not<-irrational_cf::arity=1": {
+      "neuron_id": "NEURON::S::not<-irrational_cf::arity=1",
+      "type": "single",
+      "lower": [
+        [
+          "irrational",
+          [
+            "r"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "not",
+        [
+          "finite_continued_fraction(cf, r)"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::periodic_cf_sqrt2::arity=2": {
+      "neuron_id": "NEURON::S::periodic_cf_sqrt2::arity=2",
+      "type": "single",
+      "lower": [],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "periodic_continued_fraction",
+        [
+          "sqrt(2)",
+          "list(1,2,2,2)"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::periodic_cf<-non_square::arity=2": {
+      "neuron_id": "NEURON::S::periodic_cf<-non_square::arity=2",
+      "type": "single",
+      "lower": [
+        [
+          "non_square_positive",
+          [
+            "d"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "periodic_continued_fraction",
+        [
+          "sqrt(d)",
+          "cf"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::lt<-convergent::arity=4": {
+      "neuron_id": "NEURON::S::lt<-convergent::arity=4",
+      "type": "single",
+      "lower": [
+        [
+          "continued_fraction_convergent",
+          [
+            "r",
+            "p_n",
+            "q_n"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "lt",
+        [
+          "abs(minus(r, div(p_n, q_n)))",
+          "div(1, power(q_n, 2))"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::SP::quadratic_residue<-represents::arity=1": {
+      "neuron_id": "NEURON::SP::quadratic_residue<-represents::arity=1",
+      "type": "shared_param",
+      "lower": [
+        [
+          "represents",
+          [
+            "a",
+            "b",
+            "c",
+            "n"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": "n",
+      "head_pattern": [
+        "quadratic_residue",
+        [
+          "discriminant(a,b,c)",
+          "times(4,n)"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::equals<-norm::arity=2": {
+      "neuron_id": "NEURON::S::equals<-norm::arity=2",
+      "type": "single",
+      "lower": [],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "equals",
+        [
+          "times(plus(power(x,2),power(y,2)), plus(power(u,2),power(v,2)))",
+          "plus(power(minus(times(x,u),times(y,v)),2), power(plus(times(x,v),times(y,u)),2))"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::SP::exists<-pythagorean::arity=1": {
+      "neuron_id": "NEURON::SP::exists<-pythagorean::arity=1",
+      "type": "shared_param",
+      "lower": [
+        [
+          "equals",
+          [
+            "plus(power(a,2),power(b,2))",
+            "power(c,2)"
+          ]
+        ],
+        [
+          "gt",
+          [
+            "a",
+            "0"
+          ]
+        ],
+        [
+          "gt",
+          [
+            "b",
+            "0"
+          ]
+        ],
+        [
+          "gt",
+          [
+            "c",
+            "0"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "exists",
+        [
+          "m",
+          "exists(n, and(gt(m,n), and(coprime(m,n), and(equals(a, minus(power(m,2),power(n,2))), and(equals(b, times(2,times(m,n))), equals(c, plus(power(m,2),power(n,2)))))))))"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::SP::or<-prime+divides+coprime::arity=2": {
+      "neuron_id": "NEURON::SP::or<-prime+divides+coprime::arity=2",
+      "type": "shared_param",
+      "lower": [
+        [
+          "prime",
+          [
+            "p"
+          ]
+        ],
+        [
+          "divides",
+          [
+            "p",
+            "plus(power(x,2), power(y,2))"
+          ]
+        ],
+        [
+          "coprime",
+          [
+            "x",
+            "y"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": "p",
+      "head_pattern": [
+        "or",
+        [
+          "equals(p, 2)",
+          "congruent(p, 1, 4)"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::SP::equals<-phi_prime_power::arity=2": {
+      "neuron_id": "NEURON::SP::equals<-phi_prime_power::arity=2",
+      "type": "shared_param",
+      "lower": [
+        [
+          "prime",
+          [
+            "p"
+          ]
+        ],
+        [
+          "gt",
+          [
+            "k",
+            "0"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": "p",
+      "head_pattern": [
+        "equals",
+        [
+          "phi(power(p,k))",
+          "times(minus(p,1), power(p, minus(k,1)))"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::equals<-discriminant::arity=3": {
+      "neuron_id": "NEURON::S::equals<-discriminant::arity=3",
+      "type": "single",
+      "lower": [],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "equals",
+        [
+          "discriminant(a,b,c)",
+          "minus(power(b,2), times(4,times(a,c)))"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::equals<-gcd_mod::arity=2": {
+      "neuron_id": "NEURON::S::equals<-gcd_mod::arity=2",
+      "type": "single",
+      "lower": [
+        [
+          "gt",
+          [
+            "b",
+            "0"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "equals",
+        [
+          "gcd(a,b)",
+          "gcd(b, mod(a,b))"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::SP::congruent<-prime+gt::arity=3::wilson": {
+      "neuron_id": "NEURON::SP::congruent<-prime+gt::arity=3::wilson",
+      "type": "shared_param",
+      "lower": [
+        [
+          "prime",
+          [
+            "p"
+          ]
+        ],
+        [
+          "gt",
+          [
+            "p",
+            "1"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": "p",
+      "head_pattern": [
+        "congruent",
+        [
+          "factorial(minus(p,1))",
+          "minus(0,1)",
+          "p"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::SP::congruent<-prime+gt+lt::arity=3::binomial": {
+      "neuron_id": "NEURON::SP::congruent<-prime+gt+lt::arity=3::binomial",
+      "type": "shared_param",
+      "lower": [
+        [
+          "prime",
+          [
+            "p"
+          ]
+        ],
+        [
+          "gt",
+          [
+            "k",
+            "0"
+          ]
+        ],
+        [
+          "lt",
+          [
+            "k",
+            "p"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": "p",
+      "head_pattern": [
+        "congruent",
+        [
+          "binomial(p,k)",
+          "0",
+          "p"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::SP::congruent<-prime+equals+lt::arity=3::lucas": {
+      "neuron_id": "NEURON::SP::congruent<-prime+equals+lt::arity=3::lucas",
+      "type": "shared_param",
+      "lower": [
+        [
+          "prime",
+          [
+            "p"
+          ]
+        ],
+        [
+          "equals",
+          [
+            "n",
+            "plus(n0, times(p,n1))"
+          ]
+        ],
+        [
+          "equals",
+          [
+            "k",
+            "plus(k0, times(p,k1))"
+          ]
+        ],
+        [
+          "lt",
+          [
+            "n0",
+            "p"
+          ]
+        ],
+        [
+          "lt",
+          [
+            "k0",
+            "p"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": "p",
+      "head_pattern": [
+        "congruent",
+        [
+          "binomial(n,k)",
+          "times(binomial(n0,k0), binomial(n1,k1))",
+          "p"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::exists<-gt::arity=1::gcd_iter": {
+      "neuron_id": "NEURON::S::exists<-gt::arity=1::gcd_iter",
+      "type": "single",
+      "lower": [
+        [
+          "gt",
+          [
+            "a",
+            "0"
+          ]
+        ],
+        [
+          "gt",
+          [
+            "b",
+            "0"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "exists",
+        [
+          "n",
+          "equals(gcd_iter(a,b,n), gcd(a,b))"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::forall::arity=0::prime_infinite": {
+      "neuron_id": "NEURON::S::forall::arity=0::prime_infinite",
+      "type": "single",
+      "lower": [],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "forall",
+        [
+          "N",
+          "exists(p, and(prime(p), gt(p, N)))"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::equals<-forall::arity=2": {
+      "neuron_id": "NEURON::S::equals<-forall::arity=2",
+      "type": "single",
+      "lower": [
+        [
+          "forall",
+          [
+            "p",
+            "implies(divides(p,n), prime(p))"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "equals",
+        [
+          "phi(n)",
+          "times(n, product(minus(1, div(1,p)))))"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::or::arity=0": {
+      "neuron_id": "NEURON::S::or::arity=0",
+      "type": "single",
+      "lower": [],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "or",
+        [
+          "divides(3,a)",
+          "or(divides(3,b), divides(3,plus(a,b)))"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::exists<-c096_pythagorean::arity=1": {
+      "neuron_id": "NEURON::S::exists<-c096_pythagorean::arity=1",
+      "type": "single",
+      "lower": [
+        [
+          "equals",
+          [
+            "plus(power(a,2),power(b,2))",
+            "power(c,2)"
+          ]
+        ],
+        [
+          "gt",
+          [
+            "a",
+            "0"
+          ]
+        ],
+        [
+          "gt",
+          [
+            "b",
+            "0"
+          ]
+        ],
+        [
+          "gt",
+          [
+            "c",
+            "0"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "exists",
+        [
+          "m",
+          "exists(n, and(gt(m,n), coprime(m,n), equals(a, minus(power(m,2),power(n,2))), equals(b, times(2,times(m,n))), equals(c, plus(power(m,2),power(n,2)))))"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
     }
   },
   "neuron_edges": {

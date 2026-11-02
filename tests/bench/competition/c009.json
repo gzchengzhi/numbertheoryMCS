@@ -1,0 +1,2 @@
+{"id":"C009","statement":"p>3素数p²≡1 mod 24","goal":"congruent(power(p,2), 1, 24)","premises":["prime(p)","gt(p, 3)"]}
+

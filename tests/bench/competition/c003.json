@@ -1,0 +1,1 @@
+{"id":"C003","statement":"a|b, a|c ⇒ a|(b+c)","goal":"divides(a, plus(b, c))","premises":["divides(a, b)","divides(a, c)"]}
