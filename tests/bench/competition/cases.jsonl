@@ -118,3 +118,83 @@
 {"id": "C118", "statement": "gcd(a,b) = gcd(b, a mod b)", "goal": "equals(gcd(a,b), gcd(b, mod(a,b)))", "premises": ["gt(b, 0)"]}
 {"id": "C119", "statement": "欧几里得算法终止", "goal": "exists(n, equals(gcd_iter(a, b, n), gcd(a, b)))", "premises": ["gt(a, 0)", "gt(b, 0)"]}
 {"id": "C120", "statement": "素数无穷多", "goal": "forall(N, exists(p, and(prime(p), gt(p, N))))", "premises": []}
+{"id": "X121", "statement": "整除线性组合", "goal": "divides(a, plus(times(m,b),times(n,c)))", "premises": ["divides(a, b)", "divides(a, c)"]}
+{"id": "X122", "statement": "整除乘法保持", "goal": "divides(times(a,c), times(b,c))", "premises": ["divides(a, b)"]}
+{"id": "X123", "statement": "带余除法余数为零等价", "goal": "divides(b, a)", "premises": ["equals(a, plus(times(b,q), 0))"]}
+{"id": "X124", "statement": "同余自反性", "goal": "congruent(a, a, m)", "premises": ["gt(m, 0)"]}
+{"id": "X125", "statement": "同余对称性", "goal": "congruent(b, a, m)", "premises": ["congruent(a, b, m)"]}
+{"id": "X126", "statement": "同余幂保持", "goal": "congruent(power(a,n), power(b,n), m)", "premises": ["congruent(a, b, m)", "ge(n, 0)"]}
+{"id": "X127", "statement": "同余与整除等价", "goal": "congruent(a, b, m)", "premises": ["divides(m, minus(a,b))", "gt(m, 0)"]}
+{"id": "X128", "statement": "同余与整除等价（反向）", "goal": "divides(m, minus(a,b))", "premises": ["congruent(a, b, m)"]}
+{"id": "X129", "statement": "同余除法（互质情形）", "goal": "congruent(a, b, m)", "premises": ["congruent(times(c,a), times(c,b), m)", "coprime(c, m)"]}
+{"id": "X130", "statement": "同余消去律（模数互质）", "goal": "congruent(a, b, div(m,d))", "premises": ["congruent(times(d,a), times(d,b), m)", "gt(d, 0)", "divides(d, m)"]}
+{"id": "X131", "statement": "欧拉函数素数情形", "goal": "equals(phi(p), minus(p,1))", "premises": ["prime(p)"]}
+{"id": "X132", "statement": "欧拉函数积性", "goal": "equals(phi(times(m,n)), times(phi(m),phi(n)))", "premises": ["coprime(m, n)"]}
+{"id": "X133", "statement": "威尔逊定理推论：半阶乘平方", "goal": "congruent(power(factorial(div(minus(p,1),2)), 2), power(minus(0,1), div(plus(p,1),2)), p)", "premises": ["prime(p)", "gt(p, 2)"]}
+{"id": "X134", "statement": "欧拉判别法", "goal": "congruent(power(a, div(minus(p,1),2)), 1, p)", "premises": ["prime(p)", "gt(p,2)", "quadratic_residue(a, p)"]}
+{"id": "X135", "statement": "阶的定义与费马小定理结合", "goal": "divides(ord(a, p), minus(p,1))", "premises": ["prime(p)", "coprime(a, p)"]}
+{"id": "X136", "statement": "阶整除任意指数为零的幂", "goal": "divides(ord(a, m), n)", "premises": ["congruent(power(a,n), 1, m)", "coprime(a, m)"]}
+{"id": "X137", "statement": "模数乘积的同余等价", "goal": "congruent(a, b, times(m1,m2))", "premises": ["congruent(a, b, m1)", "congruent(a, b, m2)", "coprime(m1, m2)"]}
+{"id": "X138", "statement": "欧拉定理（图式层形式）", "goal": "congruent(power(a,phi(m)), 1, m)", "premises": ["coprime(a, m)", "gt(m, 1)"]}
+{"id": "X139", "statement": "同余幂保持（固定指数）", "goal": "congruent(power(a,k), power(b,k), m)", "premises": ["congruent(a, b, m)", "ge(k, 0)"]}
+{"id": "X140", "statement": "1整除一切", "goal": "divides(1,a)", "premises": []}
+{"id": "X141", "statement": "一切整除0", "goal": "divides(a,0)", "premises": []}
+{"id": "X142", "statement": "2是素数", "goal": "prime(2)", "premises": []}
+{"id": "X143", "statement": "3是素数", "goal": "prime(3)", "premises": []}
+{"id": "X144", "statement": "5是素数", "goal": "prime(5)", "premises": []}
+{"id": "X145", "statement": "7是素数", "goal": "prime(7)", "premises": []}
+{"id": "X146", "statement": "11是素数", "goal": "prime(11)", "premises": []}
+{"id": "X147", "statement": "2整除4", "goal": "divides(2,4)", "premises": []}
+{"id": "X148", "statement": "3整除6", "goal": "divides(3,6)", "premises": []}
+{"id": "X149", "statement": "4整除12", "goal": "divides(4,12)", "premises": []}
+{"id": "X150", "statement": "5整除15", "goal": "divides(5,15)", "premises": []}
+{"id": "X151", "statement": "6整除18", "goal": "divides(6,18)", "premises": []}
+{"id": "X152", "statement": "1非零", "goal": "nonzero(1)", "premises": []}
+{"id": "X153", "statement": "同余的自反性", "goal": "congruent(a,a,m)", "premises": []}
+{"id": "X154", "statement": "欧拉函数定义", "goal": "equals(phi(n),count_coprime_below(n))", "premises": []}
+{"id": "X155", "statement": "约数个数的公式", "goal": "equals(tau(n),product_expr(n))", "premises": []}
+{"id": "X156", "statement": "1到1的和", "goal": "sum_to_n(1,1)", "premises": []}
+{"id": "X157", "statement": "1到2的和", "goal": "sum_to_n(2,3)", "premises": []}
+{"id": "X158", "statement": "1到3的和", "goal": "sum_to_n(3,6)", "premises": []}
+{"id": "X159", "statement": "1到4的和", "goal": "sum_to_n(4,10)", "premises": []}
+{"id": "X160", "statement": "归纳假设形式", "goal": "sum_to_n(k,s)", "premises": []}
+{"id": "X161", "statement": "整除的自反性", "goal": "divides(a,a)", "premises": ["nonzero(a)"]}
+{"id": "X162", "statement": "同余定义", "goal": "congruent(a,b,m)", "premises": ["divides(m,minus(a,b))"]}
+{"id": "X163", "statement": "欧几里得算法", "goal": "equals(gcd(a,b),gcd(b,mod(a,b)))", "premises": ["nonzero(b)"]}
+{"id": "X164", "statement": "整除与负数", "goal": "divides(a,minus(0,b))", "premises": ["divides(a,b)"]}
+{"id": "X165", "statement": "互质的定义", "goal": "equals(gcd(a,b),1)", "premises": ["coprime(a,b)"]}
+{"id": "X166", "statement": "同余与整除", "goal": "divides(m,a)", "premises": ["congruent(a,0,m)"]}
+{"id": "X167", "statement": "欧拉函数的积性", "goal": "equals(phi(times(m,n)),times(phi(m),phi(n)))", "premises": ["coprime(m,n)"]}
+{"id": "X168", "statement": "sum递推（具体值）", "goal": "sum_to_n(plus(n,1),plus(S,plus(n,1)))", "premises": ["sum_to_n(n,S)"]}
+{"id": "X169", "statement": "整除的传递性", "goal": "divides(a,c)", "premises": ["divides(a,b)", "divides(b,c)"]}
+{"id": "X170", "statement": "整除的线性组合", "goal": "divides(a,plus(times(m,b),times(n,c)))", "premises": ["divides(a,b)", "divides(a,c)"]}
+{"id": "X171", "statement": "费马小定理", "goal": "congruent(power(a,minus(p,1)),1,p)", "premises": ["prime(p)", "coprime(a,p)"]}
+{"id": "X172", "statement": "同余的加法", "goal": "congruent(plus(a,c),plus(b,d),m)", "premises": ["congruent(a,b,m)", "congruent(c,d,m)"]}
+{"id": "X173", "statement": "同余的乘法", "goal": "congruent(times(a,c),times(b,d),m)", "premises": ["congruent(a,b,m)", "congruent(c,d,m)"]}
+{"id": "X174", "statement": "gcd与lcm关系", "goal": "equals(times(gcd(a,b),lcm(a,b)),times(a,b))", "premises": ["gt(a,0)", "gt(b,0)"]}
+{"id": "X175", "statement": "互质与整除", "goal": "divides(a,c)", "premises": ["coprime(a,b)", "divides(a,times(b,c))"]}
+{"id": "X176", "statement": "整除的反对称性", "goal": "equals(abs(a),abs(b))", "premises": ["divides(a,b)", "divides(b,a)"]}
+{"id": "X177", "statement": "整除与gcd", "goal": "divides(a,gcd(b,c))", "premises": ["divides(a,b)", "divides(a,c)"]}
+{"id": "X178", "statement": "整除与lcm", "goal": "divides(lcm(a,b),c)", "premises": ["divides(a,c)", "divides(b,c)"]}
+{"id": "X179", "statement": "同余的传递性", "goal": "congruent(a,c,m)", "premises": ["congruent(a,b,m)", "congruent(b,c,m)"]}
+{"id": "X180", "statement": "素数幂的欧拉函数", "goal": "equals(phi(power(p,k)),minus(power(p,k),power(p,minus(k,1))))", "premises": ["prime(p)", "ge(k,1)"]}
+{"id": "X181", "statement": "整除与大小", "goal": "le(a,b)", "premises": ["divides(a,b)", "gt(a,0)", "gt(b,0)"]}
+{"id": "X182", "statement": "自动发现 NEURON::T::equals::@0-@0::arity=2", "goal": "equals(r1,r2)", "premises": ["equals(a,plus(times(b,q1),r1))", "equals(a,plus(times(b,q2),r2))"]}
+{"id": "X183", "statement": "自动发现 NEURON::T::equals::@1-@1::arity=2", "goal": "equals(r1,r2)", "premises": ["equals(r1,r2)", "lt(r2,b)"]}
+{"id": "X184", "statement": "自动发现 NEURON::T::divides::@0-@0::arity=2", "goal": "divides(div(n1,d1),div(n2,d2))", "premises": ["divides(a,c)", "divides(d2,d1)"]}
+{"id": "X185", "statement": "自动发现 NEURON::T::congruent::@0-@0::arity=3", "goal": "congruent(div(a,c),div(b,c),m)", "premises": ["divides(c,a)", "divides(c,b)"]}
+{"id": "X186", "statement": "自动发现 NEURON::T::equals::@2-@2::arity=2", "goal": "equals(x,plus(x0,times(k,div(m,d))))", "premises": ["equals(r1,r2)", "congruent(times(a,x0),b,m)"]}
+{"id": "X187", "statement": "自动发现 NEURON::SP::quadratic_residue<-quadratic_residue+quadratic_residue::arity=2", "goal": "quadratic_residue(times(a,b),p)", "premises": ["quadratic_residue(a,p)", "quadratic_residue(b,p)"]}
+{"id": "X188", "statement": "自动发现 NEURON::S::congruent<-prime+gt::arity=3", "goal": "congruent(power(p,2),1,24)", "premises": ["prime(p)", "gt(p,3)"]}
+{"id": "X189", "statement": "自动发现 NEURON::SP::congruent<-coprime+gt::arity=3", "goal": "congruent(power(a,phi(m)),1,m)", "premises": ["coprime(a,m)", "gt(m,1)"]}
+{"id": "X190", "statement": "自动发现 NEURON::SP::divides<-divides+divides::arity=2::product", "goal": "divides(times(a,c),times(b,d))", "premises": ["divides(a,b)", "divides(c,d)"]}
+{"id": "X191", "statement": "自动发现 NEURON::S::congruent<-congruent::arity=3::power_no_ge", "goal": "congruent(power(a,k),power(b,k),m)", "premises": ["congruent(a,b,m)"]}
+{"id": "X192", "statement": "自动发现 NEURON::S::equals<-congruent::arity=2::gcd", "goal": "equals(gcd(a,m),gcd(b,m))", "premises": ["congruent(a,b,m)"]}
+{"id": "X193", "statement": "自动发现 NEURON::S::congruent<-congruent::arity=3::add_same", "goal": "congruent(plus(a,c),plus(b,c),m)", "premises": ["congruent(a,b,m)"]}
+{"id": "X194", "statement": "自动发现 NEURON::S::equals<-divides::arity=2::gcd_a", "goal": "equals(gcd(a,b),a)", "premises": ["divides(a,b)"]}
+{"id": "X195", "statement": "自动发现 NEURON::S::congruent<-odd::arity=2", "goal": "congruent(power(n,2),1,8)", "premises": ["odd(n)"]}
+{"id": "X196", "statement": "自动发现 NEURON::S::odd<-prime+gt::arity=1", "goal": "odd(p)", "premises": ["prime(p)", "gt(p,2)"]}
+{"id": "X197", "statement": "自动发现 NEURON::S::divides<-gcd::arity=2", "goal": "divides(gcd(a,b),a)", "premises": []}
+{"id": "X198", "statement": "自动发现 NEURON::S::divides<-gcd::arity=2::b", "goal": "divides(gcd(a,b),b)", "premises": []}
+{"id": "X199", "statement": "自动发现 NEURON::SP::divides<-ord+prime::arity=2", "goal": "divides(ord(a,p),minus(p,1))", "premises": ["prime(p)", "coprime(a,p)"]}
+{"id": "X200", "statement": "自动发现 NEURON::SP::congruent<-prime+quadratic_residue::arity=3", "goal": "congruent(power(a,div(minus(p,1),2)),1,p)", "premises": ["prime(p)", "quadratic_residue(a,p)"]}

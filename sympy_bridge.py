@@ -16,7 +16,7 @@ def to_sympy(term, store):
 
     decls = store.find_sympy_decls(pred)
     if not decls:
-        print(f"[DEBUG to_sympy] {pred} 没有声明")
+#        print(f"[DEBUG to_sympy] {pred} 没有声明")
         return None
 
     # 收集 custom_funcs
@@ -35,15 +35,15 @@ def to_sympy(term, store):
         try:
             fn = eval(d['translate'], env)
             sympy_args = [_to_sympy_arg(a, store) for a in args]
-            print(f"[DEBUG to_sympy] {pred} 参数翻译结果: {sympy_args}")
+            # print(f"[DEBUG to_sympy] {pred} 参数翻译结果: {sympy_args}")
             if any(x is None for x in sympy_args):
-                print(f"[DEBUG to_sympy] {pred} 有参数是 None，跳过")
+                # print(f"[DEBUG to_sympy] {pred} 有参数是 None，跳过")
                 continue
             result = fn(*sympy_args)
-            print(f"[DEBUG to_sympy] {pred} 计算结果: {result}")
+            # print(f"[DEBUG to_sympy] {pred} 计算结果: {result}")
             return result
         except Exception as e:
-            print(f"[DEBUG to_sympy] {pred} 异常: {e}")
+            # print(f"[DEBUG to_sympy] {pred} 异常: {e}")
             continue
 
     return None

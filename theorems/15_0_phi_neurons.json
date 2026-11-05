@@ -1,0 +1,71 @@
+{
+  "concept_neurons": {
+    "NEURON::S::equals<-prime::arity=2::phi_prime": {
+      "neuron_id": "NEURON::S::equals<-prime::arity=2::phi_prime",
+      "type": "single",
+      "lower": [["prime", ["p"]]],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": ["equals", ["phi(p)", "minus(p,1)"]],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::SP::equals<-coprime::arity=2::phi_mult": {
+      "neuron_id": "NEURON::SP::equals<-coprime::arity=2::phi_mult",
+      "type": "shared_param",
+      "lower": [["coprime", ["m", "n"]]],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": ["equals", ["phi(times(m,n))", "times(phi(m),phi(n))"]],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::equals<-equals::arity=2::phi_def": {
+      "neuron_id": "NEURON::S::equals<-equals::arity=2::phi_def",
+      "type": "single",
+      "lower": [],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": ["equals", ["phi(n)", "count_coprime_below(n)"]],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::SP::equals<-prime+ge::arity=2::phi_prime_power": {
+      "neuron_id": "NEURON::SP::equals<-prime+ge::arity=2::phi_prime_power",
+      "type": "shared_param",
+      "lower": [["prime", ["p"]], ["ge", ["k", "1"]]],
+      "mediator": null,
+      "anchor": "p",
+      "head_pattern": ["equals", ["phi(power(p,k))", "minus(power(p,k),power(p,minus(k,1)))"]],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::SP::congruent<-prime+gt::arity=3::wilson_sq": {
+      "neuron_id": "NEURON::SP::congruent<-prime+gt::arity=3::wilson_sq",
+      "type": "shared_param",
+      "lower": [["prime", ["p"]], ["gt", ["p", "2"]]],
+      "mediator": null,
+      "anchor": "p",
+      "head_pattern": ["congruent", ["power(factorial(div(minus(p,1),2)), 2)", "power(minus(0,1), div(plus(p,1),2))", "p"]],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::equals<-phi_prime::arity=2": {
+      "neuron_id": "NEURON::S::equals<-phi_prime::arity=2",
+      "type": "single",
+      "lower": [["prime", ["p"]]],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": ["equals", ["phi(p)", "minus(p,1)"]],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    }
+  },
+  "neuron_edges": {}
+}

@@ -100,4 +100,14 @@ SYMPY_DECLS = {
         "predicate": "odd",
         "sympy": "lambda n: sympy.Integer(n).is_odd if n.is_Integer else None",
     },
+    "unit_fraction_sum": {
+        "predicate": "unit_fraction_sum",
+        "sympy": "lambda x, y, z, n: Eq(1/n, 1/x + 1/y + 1/z)",
+    },
+    "times": {
+        "predicate": "times",
+        "translate": "lambda a, b: a * b",
+
+    },
+
 }

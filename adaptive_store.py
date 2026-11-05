@@ -335,6 +335,7 @@ class AdaptiveStore(TheoremStore):
             key = (cid, oid) if cid < oid else (oid, cid)
             if key not in self.cooccur_edges:
                 self.cooccur_edges[key] = EPSILON
+                self._adj_add(cid, oid, EPSILON)
                 
                 
     def mark_learned(self, ids: List[str]):

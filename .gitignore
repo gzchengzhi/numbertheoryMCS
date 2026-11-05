@@ -1,8 +1,17 @@
+
 # 备份
 .bak/
 *.bak
 *.bak_*
 *.backup
+untitled*.py
+tmp_*.py
+bench_out.txt
+tests/tmp_clean.py
+tests/test_16_auto_learn_b.py
+tests/test_deep_single_speed.py
+tests/bench/competition/cases.jsonl.txt
+data/16_0_candidates.jsonl
 
 # Python
 __pycache__/

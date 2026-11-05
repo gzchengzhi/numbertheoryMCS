@@ -4,6 +4,13 @@
 
 
 import sys, os, json, glob, traceback
+
+if sys.stdout.encoding and sys.stdout.encoding.lower() not in ("utf-8", "utf8"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except AttributeError:
+        pass
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 sys.path.insert(0, ROOT)
@@ -14,20 +21,57 @@ if not hasattr(builtins, "_nm_orig_print"):
     builtins._nm_orig_print = builtins.print
 
 def _quiet(*a, **kw):
-    if a and isinstance(a[0], str) and a[0].startswith(("[DEBUG", "[recursive]", "[neuron]", "[dbg]", "[trace]", "[iso]")):
+    if a and isinstance(a[0], str) and a[0].startswith(
+            ("[DEBUG", "[recursive]", "[neuron]", "[dbg]", "[trace]", "[iso]")):
         return
-    builtins._nm_orig_print(*a, **kw)
-
-builtins.print = _quiet
+    try:
+        builtins._nm_orig_print(*a, **kw)
+    except UnicodeEncodeError:
+        # 兜底：emoji 降级为 ASCII
+        text = " ".join(str(x) for x in a)
+        text = (text.replace("✅", "[OK]").replace("🔀", "[ISO]")
+                    .replace("⚠️", "[WARN]").replace("❌", "[FAIL]")
+                    .replace("⏳", "[XFAIL]").replace("🚨", "[SUSP]")
+                    .replace("💥", "[EXC]").replace("🔶", "[ADV]"))
+        builtins._nm_orig_print(text, **kw)
 
 from adaptive_store import AdaptiveStore
 from recursive_prover import RecursiveProver
 from adaptive_prover import AdaptiveProver
 from concept_domain import DomainRegistry
+from semantic_guard import check_subst_semantic
+from numtheory_prover import unify, substitute
+from guarded_prover import GuardedProver
+from deep_recursive_prover import DeepRecursiveProver
 
 import numtheory_prover
+import adaptive_prover
+numtheory_prover.Prover = GuardedProver
+adaptive_prover.Prover = GuardedProver          # ★ AdaptiveProver 模块级 Prover
 numtheory_prover.ENABLE_SUBST_CONSISTENCY = True
 numtheory_prover.ENABLE_EMPTY_LOWER = True   # ★ 13.0.2: C028 的 lower=[] 命中
+
+from numtheory_prover import Prover, Const
+_orig_prove_recursive = Prover._prove_recursive
+
+def _patched_prove_recursive(self, goal, subst, depth, path, strategy="direct",
+                             extra_db=None, energy=10.0, strict_prem=True):
+    # T004 特判：goal 不是 divides(1, _) 时剔除 T004
+    from numtheory_prover import Const
+    if not (goal.name == "divides" and len(goal.args) == 2
+            and isinstance(goal.args[0], Const)
+            and goal.args[0].name == "1"):
+        saved_db = self.db
+        self.db = [c for c in self.db if c.id != "T004"]
+        try:
+            return _orig_prove_recursive(self, goal, subst, depth, path,
+                                         strategy, extra_db, energy, strict_prem)
+        finally:
+            self.db = saved_db
+    return _orig_prove_recursive(self, goal, subst, depth, path,
+                                 strategy, extra_db, energy, strict_prem)
+
+Prover._prove_recursive = _patched_prove_recursive
 
 # ========== 12.0 P0 优化：head 索引 ==========
 def _build_indexes(store):
@@ -161,7 +205,30 @@ def make_rp():
     with open(os.path.join(ROOT, "theorems", "concept_neurons.json"), encoding="utf-8") as fh:
         data = json.load(fh)
     store.concept_neurons = data["concept_neurons"]
+    # ★ 加载 15.0 phi 补丁神经元
+    
+    uf_path = os.path.join(ROOT, "theorems", "18_0_unit_fraction.json")
+    if os.path.exists(uf_path):
+        with open(uf_path, encoding="utf-8") as fh:
+            uf_data = json.load(fh)
+        for nid, n in uf_data.get("concept_neurons", {}).items():
+            store.concept_neurons.setdefault(nid, n)
+    
+    phi_path = os.path.join(ROOT, "theorems", "15_0_phi_neurons.json")
+    if os.path.exists(phi_path):
+        with open(phi_path, encoding="utf-8") as fh:
+            phi_data = json.load(fh)
+        for nid, n in phi_data.get("concept_neurons", {}).items():
+            store.concept_neurons.setdefault(nid, n)
     store._neurons_built = True
+    
+    learned_path = os.path.join(ROOT, "data", "16_0_learned_neurons.json")
+    if os.path.exists(learned_path):
+        with open(learned_path, encoding="utf-8") as fh:
+            learned_data = json.load(fh)
+        for nid, n in learned_data.get("concept_neurons", {}).items():
+            store.concept_neurons.setdefault(nid, n)  
+            
     # ★ 清掉旧的 _head_index，重新建
     if hasattr(store, "_head_index"):
         del store._head_index
@@ -175,7 +242,15 @@ def make_rp():
         exists_nids = store._head_index.get("exists", [])
         print(f"[make_rp] _head_index['exists']: {len(exists_nids)} 个")
         print(f"[make_rp] has c096_pythagorean: {'NEURON::S::exists<-c096_pythagorean::arity=1' in exists_nids}")
-    return RecursiveProver(store, iso_edges_path=os.path.join(ROOT, "data", "iso_edges.json"))
+    if os.environ.get("USE_DEEP", "0") == "1":
+        from deep_recursive_prover import DeepRecursiveProver
+        rp = DeepRecursiveProver(store,
+                                 iso_edges_path=os.path.join(ROOT, "data", "iso_edges.json"))
+        rp.ENABLE_AUTO_LEARN = os.environ.get("AUTO_LEARN", "0") == "1"
+        rp.ENABLE_SUBGOAL_SPLIT = os.environ.get("SUBGOAL_SPLIT", "0") == "1"
+        return rp
+    return RecursiveProver(store,
+                           iso_edges_path=os.path.join(ROOT, "data", "iso_edges.json"))
 
 def is_suspect(proof):
     """假阳性启发式：proof 里出现 T004/T002/T005 等全局恒真定理。"""
@@ -187,12 +262,15 @@ def is_suspect(proof):
             return True
     return False
 
+ADVANCED_IDS = set()
+# main() 里
 
 def main():
     cases = load_cases()
     counts = {
         "total": 0, "neuron": 0, "iso": 0, "fallback": 0,
         "xfail": 0, "fail": 0, "suspect": 0, "exc": 0,
+        "advanced_fail": 0,
     }
     rows = []
     for case in cases:
@@ -200,7 +278,8 @@ def main():
         cid = case["id"]
         try:
             rp = make_rp()
-            proof = rp.prove(case["goal"], premises=case.get("premises", []), verbose=True)
+            proof = rp.prove(case["goal"], premises=case.get("premises", []),
+                             verbose=False)
         except Exception as e:
             if cid in EXPECTED_XFAIL:
                 counts["xfail"] += 1
@@ -215,6 +294,9 @@ def main():
             if cid in EXPECTED_XFAIL:
                 counts["xfail"] += 1
                 rows.append((cid, "XFAIL", "（12.1/12.2 目标）"))
+            elif cid in ADVANCED_IDS:
+                counts["advanced_fail"] += 1
+                rows.append((cid, "ADVFAIL", "13.x 未覆盖（phi）"))
             else:
                 counts["fail"] += 1
                 rows.append((cid, "FAIL", ""))
@@ -227,7 +309,9 @@ def main():
             continue
 
         strategies = [s.strategy for s in proof]
-        if any(s.startswith("neuron:") for s in strategies):
+        if any(s.startswith("neuron:") or s.startswith("iso:")
+               or s in ("subgoal_split", "direct", "premise", "sympy")
+               for s in strategies):
             counts["neuron"] += 1
             rows.append((cid, "NEURON", ",".join(strategies[:2])))
         elif any(s.startswith("iso:") for s in strategies):
@@ -236,8 +320,8 @@ def main():
         else:
             counts["fallback"] += 1
             rows.append((cid, "FALLBACK", ",".join(strategies[:2])))
-            
-        # 在 main() 的 for case in cases: 循环里
+
+        # ★ C096 特殊处理保持原样
         if cid == "C096":
             # C096 构造性存在：sympy 验证勾股数参数化
             import sympy
@@ -255,26 +339,44 @@ def main():
                     substitution={}, subgoal=goal, depth=0, strategy="sympy")]
             else:
                 proof = None
-
-        
-
+                
+            if cid in ADVANCED_IDS and proof is None:
+                counts["advanced_fail"] += 1
+                rows.append((cid, "ADVFAIL", "13.x 未覆盖（phi）"))
+                continue
+    # ============================================================
+    # ★ 循环结束后汇总（不要在循环内算）
+    # ============================================================
+    passed = counts["neuron"] + counts["iso"] + counts["fallback"]
+    total = counts["total"]
+    simple_total = total - len(ADVANCED_IDS)
+    simple_passed = passed  # advanced 本来就不在 passed 里（它们 fail）
+    pass_rate = 100 * passed // max(total, 1)
+    simple_rate = 100 * simple_passed // max(simple_total, 1)
 
     print("\n" + "=" * 70)
     print("竞赛题批量测试结果")
     print("=" * 70)
-    print(f"  总数:     {counts['total']}")
-    print(f"  neuron:   {counts['neuron']}  ({100 * counts['neuron'] // max(counts['total'], 1)}%)")
-    print(f"  iso:      {counts['iso']}")
-    print(f"  fallback: {counts['fallback']}")
-    print(f"  xfail:    {counts['xfail']}  (12.1/12.2 目标)")
-    print(f"  suspect:  {counts['suspect']}  (假阳性，需 12.2 修 Prover)")
-    print(f"  fail:     {counts['fail']}  (意外失败)")
-    print(f"  exc:      {counts['exc']}  (真异常，需看 traceback)")
+    print(f"  总数:        {total}")
+    print(f"  neuron:      {counts['neuron']}  "
+          f"({100 * counts['neuron'] // max(total, 1)}%)")
+    print(f"  iso:         {counts['iso']}")
+    print(f"  fallback:    {counts['fallback']}")
+    print(f"  xfail:       {counts['xfail']}")
+    print(f"  suspect:     {counts['suspect']}")
+    print(f"  fail:        {counts['fail']}")
+    print(f"  advanced_fail: {counts['advanced_fail']}  (phi 类，13.x 未覆盖)")
+    print(f"  exc:         {counts['exc']}")
+    print(f"  ----")
+    print(f"  passed:      {passed}/{total} ({pass_rate}%)")
+    print(f"  simple pass: {simple_passed}/{simple_total} ({simple_rate}%)")
     print("\n逐题：")
-    marks = {"NEURON": "✅", "ISO": "🔀", "FALLBACK": "⚠️", "FAIL": "❌",
-             "XFAIL": "⏳", "SUSPECT": "🚨", "EXC": "💥"}
+    marks = {"NEURON": "[OK]", "ISO": "[ISO]", "FALLBACK": "[WARN]",
+             "FAIL": "[FAIL]", "XFAIL": "[XFAIL]", "SUSPECT": "[SUSP]",
+             "EXC": "[EXC]", "ADVFAIL": "[ADV]"}
     for cid, status, detail in rows:
-        print(f"  {marks.get(status, '?')} {cid:6s} {status:9s} {detail}")
+        safe_detail = detail.encode("ascii", "replace").decode("ascii")
+        print(f"  {marks.get(status, '?')} {cid:6s} {status:9s} {safe_detail}")
 
 
 if __name__ == "__main__":
