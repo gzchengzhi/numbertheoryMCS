@@ -1,0 +1,73 @@
+{
+  "concept_neurons": {
+    "NEURON::S::divides<-equals::arity=auto": {
+      "neuron_id": "NEURON::S::divides<-equals::arity=auto",
+      "type": "single",
+      "lower": [
+        [
+          "equals",
+          [
+            "a",
+            "plus(times(b,q), 0)"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "divides",
+        [
+          "b",
+          "a"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": [],
+      "source": "X123"
+    },
+    "NEURON::S::congruent<-congruent+divides+gt::arity=auto": {
+      "neuron_id": "NEURON::S::congruent<-congruent+divides+gt::arity=auto",
+      "type": "single",
+      "lower": [
+        [
+          "congruent",
+          [
+            "times(d,a)",
+            "times(d,b)",
+            "m"
+          ]
+        ],
+        [
+          "gt",
+          [
+            "d",
+            "0"
+          ]
+        ],
+        [
+          "divides",
+          [
+            "d",
+            "m"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "congruent",
+        [
+          "a",
+          "b",
+          "div(m,d)"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "instances": [],
+      "source": "X130"
+    }
+  },
+  "neuron_edges": {}
+}

@@ -1,0 +1,38 @@
+{
+  "concept_neurons": {
+    "NEURON::S::congruent<-congruent_add_same::arity=3": {
+      "neuron_id": "NEURON::S::congruent<-congruent_add_same::arity=3",
+      "type": "single",
+      "lower": [["congruent", ["p", "r", "m"]]],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": ["congruent", ["plus(p,k)", "plus(r,k)", "m"]],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::congruent<-congruent_sub_same::arity=3": {
+      "neuron_id": "NEURON::S::congruent<-congruent_sub_same::arity=3",
+      "type": "single",
+      "lower": [["congruent", ["p", "r", "m"]]],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": ["congruent", ["minus(p,k)", "minus(r,k)", "m"]],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    },
+    "NEURON::S::integer<-congruent_div::arity=3": {
+      "neuron_id": "NEURON::S::integer<-congruent_div::arity=3",
+      "type": "single",
+      "lower": [["congruent", ["N", "0", "m"]]],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": ["integer", ["div(N,m)"]],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    }
+  },
+  "neuron_edges": {}
+}

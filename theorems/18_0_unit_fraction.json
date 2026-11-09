@@ -1,0 +1,16 @@
+{
+  "concept_neurons": {
+    "NEURON::S::unit_fraction_sum<-gt::arity=1": {
+      "neuron_id": "NEURON::S::unit_fraction_sum<-gt::arity=1",
+      "type": "single",
+      "lower": [["gt", ["n", "0"]]],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": ["unit_fraction_sum", ["x", "y", "z", "n"]],
+      "N": 1,
+      "weight": 1.0,
+      "instances": []
+    }
+  },
+  "neuron_edges": {}
+}

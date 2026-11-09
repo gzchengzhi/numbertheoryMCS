@@ -1,0 +1,5 @@
+{"id": "D001", "statement": "a|b, b|c, c|d, d|e ⇒ a|e（4 步传递）", "goal": "divides(a, e)", "premises": ["divides(a, b)", "divides(b, c)", "divides(c, d)", "divides(d, e)"], "expected_depth": 4}
+{"id": "D002", "statement": "a|b, b|c, c|d, d|e, e|f, f|g, g|h, h|i ⇒ a|i（8 步传递）", "goal": "divides(a, i)", "premises": ["divides(a, b)", "divides(b, c)", "divides(c, d)", "divides(d, e)", "divides(e, f)", "divides(f, g)", "divides(g, h)", "divides(h, i)"], "expected_depth": 8}
+{"id": "D003", "statement": "同余传递链 4 步：a≡b, b≡c, c≡d, d≡e (mod m) ⇒ a≡e", "goal": "congruent(a, e, m)", "premises": ["congruent(a, b, m)", "congruent(b, c, m)", "congruent(c, d, m)", "congruent(d, e, m)"], "expected_depth": 4, "note": "需要 only_predicates={'divides','congruent'}，5e 默认只开 divides，此题为 xfail 占位"}
+{"id": "D004", "statement": "a|b, b|c, c≡d (mod m) ⇒ 不接链，应失败", "goal": "divides(a, d)", "premises": ["divides(a, b)", "divides(b, c)", "congruent(c, d, m)"], "expected_depth": null, "expect_fail": true}
+{"id": "D005", "statement": "a|b, c|d ⇒ a|d 无中间链，应失败", "goal": "divides(a, d)", "premises": ["divides(a, b)", "divides(c, d)"], "expected_depth": null, "expect_fail": true}
