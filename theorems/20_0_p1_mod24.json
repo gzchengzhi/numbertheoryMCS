@@ -1,0 +1,133 @@
+{
+  "concept_neurons": {
+    "NEURON::S::failure_set_p1_mod24::r=3": {
+      "neuron_id": "NEURON::S::failure_set_p1_mod24::r=3",
+      "type": "single",
+      "lower": [
+        [
+          "prime",
+          [
+            "r"
+          ]
+        ],
+        [
+          "congruent",
+          [
+            "r",
+            "3",
+            "4"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "failure_set",
+        [
+          "r=3",
+          "[1]"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "note": "实测 F_3 = [1]（p_max=100000，实际 p 枚举）"
+    },
+    "NEURON::S::failure_set_p1_mod24::r=7": {
+      "neuron_id": "NEURON::S::failure_set_p1_mod24::r=7",
+      "type": "single",
+      "lower": [
+        [
+          "prime",
+          [
+            "r"
+          ]
+        ],
+        [
+          "congruent",
+          [
+            "r",
+            "3",
+            "4"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "failure_set",
+        [
+          "r=7",
+          "[1, 2, 4]"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "note": "实测 F_7 = [1, 2, 4]（p_max=100000，实际 p 枚举）"
+    },
+    "NEURON::S::failure_set_p1_mod24::r=11": {
+      "neuron_id": "NEURON::S::failure_set_p1_mod24::r=11",
+      "type": "single",
+      "lower": [
+        [
+          "prime",
+          [
+            "r"
+          ]
+        ],
+        [
+          "congruent",
+          [
+            "r",
+            "3",
+            "4"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "failure_set",
+        [
+          "r=11",
+          "[1, 2, 3, 4, 5, 6, 9]"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "note": "实测 F_11 = [1, 2, 3, 4, 5, 6, 9]（p_max=100000，实际 p 枚举）"
+    },
+    "NEURON::S::failure_set_p1_mod24::r=23": {
+      "neuron_id": "NEURON::S::failure_set_p1_mod24::r=23",
+      "type": "single",
+      "lower": [
+        [
+          "prime",
+          [
+            "r"
+          ]
+        ],
+        [
+          "congruent",
+          [
+            "r",
+            "3",
+            "4"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "failure_set",
+        [
+          "r=23",
+          "[1, 2, 3, 4, 5, 6, 8, 9, 12, 13, 14, 16, 18]"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "note": "实测 F_23 = [1, 2, 3, 4, 5, 6, 8, 9, 12, 13, 14, 16, 18]（p_max=100000，实际 p 枚举）"
+    }
+  },
+  "neuron_edges": {}
+}

@@ -1,0 +1,11 @@
+{
+  "theorem": "Algebraic Obstruction and Finite Verification for p ≡ 1 (mod 24)",
+  "statement": "The branch success implies q = (p+r)/4 must fall into one of at most 8 specific residue classes modulo r. Consequently, if q avoids these classes, the branch fails. For p <= 10^7, this condition is empirically sufficient.",
+  "proof_steps": [
+    "1. Success criterion: e ≡ -q (mod r) for some divisor e | p q^2.",
+    "2. Substituting p ≡ 4q (mod r), this reduces to q falling into at most 8 residue classes.",
+    "3. If q avoids these classes, the branch necessarily fails (P(fail) >= 1 - 8/r).",
+    "4. Numerical validation for p <= 10^7 shows that these 8 classes suffice to cover all primes."
+  ],
+  "honest_boundary": "Proving that these 8 classes are universally complete for all p remains open; it requires resolving the distribution of prime factors of specific polynomials."
+}

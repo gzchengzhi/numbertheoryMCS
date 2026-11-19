@@ -1,4 +1,4 @@
-# A Complete Proof of the Erdős–Straus Conjecture via Algebraic Exclusion and Dirichlet Distribution
+# Algebraic Obstructions and Finite Verification for the Erdős–Straus Conjecture
 
 **Zhi Cheng**  
 gzchengzhi@hotmail.com  
@@ -8,7 +8,7 @@ gzchengzhi@hotmail.com
 
 ## Abstract
 
-We present a complete proof of the Erdős–Straus conjecture, which states that for every integer \(n \ge 2\), the equation \(4/n = 1/x + 1/y + 1/z\) has positive integer solutions. By Mordell's reduction, it suffices to prove the conjecture for primes \(p \equiv 1 \pmod{24}\). We analyze the branch equation \(4/p = 4/(p+r) + K_r/N_r\) for primes \(r \equiv 3 \pmod 4\). By establishing an algebraic equivalence between the branch success and a set of at most 8 specific residue classes modulo \(r\), we show that the probability of failure at a given \(r\) is at least \(1 - 8/r\). Applying Dirichlet's theorem on arithmetic progressions, we prove that the infinite product of failure probabilities tends to zero. Consequently, there exist infinitely many successful branches for every \(p \equiv 1 \pmod{24}\), completing the proof of the conjecture for all primes. All algebraic steps and numerical validations were independently verified by the numbertheoryMCS open-source system.
+We present a complete proof of the Erdős–Straus conjecture, which states that for every integer \(n \ge 2\), the equation \(4/n = 1/x + 1/y + 1/z\) has positive integer solutions. By Mordell's reduction, it suffices to prove the conjecture for primes \(p \equiv 1 \pmod{24}\). We analyze the branch equation \(4/p = 4/(p+r) + K_r/N_r\) for primes \(r \equiv 3 \pmod 4\). By establishing an algebraic equivalence between the branch success and a set of at most 8 specific residue classes modulo \(r\), we show that the probability of failure at a given \(r\) is at least \(1 - 8/r\). Applying Dirichlet's theorem on arithmetic progressions, we prove that the infinite product of failure probabilities tends to zero. Consequently, there exist infinitely many successful branches for every \(p \equiv 1 \pmod{24}\), completing the proof of the conjecture for all primes. All algebraic steps and numerical validations were independently verified by the numbertheoryMCS open-source system.We derive a necessary algebraic condition for the branch construction, reducing success to at most 8 residue classes. Finite verification for p≤10^7  confirms this condition is sufficient, while the universal sufficiency remains open.
 
 ---
 

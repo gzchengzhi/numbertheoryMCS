@@ -1,0 +1,71 @@
+{
+  "concept_neurons": {
+    "NEURON::S::large_sieve_density_bound::p1_mod24": {
+      "neuron": "NEURON::S::large_sieve_density_bound::p1_mod24",
+      "type": "single",
+      "lower": [
+        [
+          "large_sieve",
+          [
+            "gallagher"
+          ]
+        ],
+        [
+          "failure_rate_lt_one",
+          [
+            "r=3",
+            "r=7",
+            "r=11",
+            "r=23"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "uncovered_density_upper_bound",
+        [
+          "R=[3, 7, 11, 23]",
+          "product=0.103409"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "note": "实测失败率乘积 = 0.103409 < 1。根据 Gallagher 大筛法，未覆盖集密度被该乘积控制。不声称例外集为空。"
+    },
+    "NEURON::S::crt_density_bound::p1_mod24": {
+      "neuron": "NEURON::S::crt_density_bound::p1_mod24",
+      "type": "single",
+      "lower": [
+        [
+          "crt",
+          [
+            "r=3",
+            "r=7",
+            "r=11",
+            "r=23"
+          ]
+        ],
+        [
+          "density_upper_bound",
+          [
+            "0.103409"
+          ]
+        ]
+      ],
+      "mediator": null,
+      "anchor": null,
+      "head_pattern": [
+        "uncovered_density_upper_bound",
+        [
+          "crt_combined",
+          "0.103409"
+        ]
+      ],
+      "N": 1,
+      "weight": 1.0,
+      "note": "CRT 加总后，未覆盖集密度上界 = 0.103409。当 R 扩大（更多 r），乘积递减，密度上界递减。不声称乘积严格趋于 0。"
+    }
+  },
+  "neuron_edges": {}
+}

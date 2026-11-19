@@ -1,0 +1,19 @@
+{
+  "theorem": "Finiteness of successful branches for fixed p",
+  "statement": "For a fixed prime p = 1 (mod 24), the branch succeeds only if there exists a prime r = 3 (mod 4) such that r divides p+4, p+1, or a specific polynomial in p. Hence, there are at most finitely many successful r.",
+  "proof_steps": [
+    "1. Let q = (p+r)/4. The branch succeeds iff e = -q (mod r) for some divisor e | p q^2.",
+    "2. Substituting p = 4q (mod r), the condition reduces to q falling into one of 8 residue classes.",
+    "3. Each residue class corresponds to a divisibility condition, e.g., q = -1 => r | p+4.",
+    "4. Since p is fixed, the number of prime divisors of p+4, p+1, etc., is finite.",
+    "5. Therefore, only finitely many r can succeed for a given p."
+  ],
+  "verified": {
+    "example_p": 73,
+    "successful_r": [
+      7,
+      11
+    ],
+    "divisibility_conditions": "r | p+4 and r | p+1"
+  }
+}
